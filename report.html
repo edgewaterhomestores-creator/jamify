@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trend Research Report</title>
+<style>
+body{margin:0;background:#e9edf2;color:#1d2633;font-family:Arial,Helvetica,sans-serif;font-size:13px}
+.page{max-width:980px;margin:18px auto;padding:18px;background:#fff;border:1px solid #d3d9e1;border-radius:8px}
+.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+h1{margin:0;font-size:22px;line-height:1.2} .meta{margin-top:5px;color:#657285;font-size:12px;line-height:1.4}
+.actions{display:flex;gap:8px} .btn{display:inline-flex;min-height:34px;align-items:center;justify-content:center;padding:7px 12px;border:1px solid #172033;border-radius:6px;background:#fff;color:#172033;font-weight:700;text-decoration:none;white-space:nowrap} .primary{background:#172033;color:#fff}
+table{width:100%;border-collapse:collapse;table-layout:fixed} th,td{border:1px solid #9aa5b1;padding:8px;text-align:left;vertical-align:top} th{background:#f2f4f7;font-size:11px;text-transform:uppercase} .score{color:#167449;font-weight:700} td span{display:block;margin-top:4px;color:#364456;font-size:12px;line-height:1.35}
+.note{margin:12px 0;padding:10px;border:1px solid #f1b8b2;border-radius:6px;background:#fff1f0;color:#b42318;font-weight:700}
+@media print{@page{size:letter portrait;margin:.3in}body{background:#fff;font-size:10px}.page{max-width:none;margin:0;padding:0;border:0}.actions{display:none}th,td{padding:5px}}
+@media(max-width:760px){.page{margin:0;border-left:0;border-right:0;border-radius:0}.topbar,.actions{flex-direction:column}.table-wrap{overflow-x:auto}table{min-width:900px}}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="topbar">
+    <div>
+      <h1>Trend Research Report</h1>
+      <div class="meta">Generated: 2026-06-10<br>Market: Florida, Volusia County Florida, Edgewater Florida, New Smyrna Beach Florida, Oak Hill Florida, Titusville Florida<br>Data status: Live Google Shopping data</div>
+    </div>
+    <div class="actions"><a class="btn primary" href="report.pdf">Download PDF</a><button class="btn" onclick="window.print()">Print</button><a class="btn" href="index.html">Dashboard</a></div>
+  </div>
+  <div class="note">Real price, seller, and rating data came from SerpApi Google Shopping. Trend growth and review pain-point scanning are still under development.</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th style="width:56px">Score</th><th style="width:220px">Product / Hook</th><th style="width:70px">Sellers</th><th style="width:90px">Price</th><th style="width:70px">Rating</th><th style="width:170px">Pain Points</th><th>Sample Sources</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="score">42</td>
+          <td><strong>beach wagon balloon wheels</strong><span>The Beach Wagon Balloon Wheels Everyone Will Want Next Season.</span></td>
+          <td>56</td>
+          <td>$37.3-$899.99</td>
+          <td>4.33</td>
+          <td>Review scan not wired yet</td>
+          <td>DICK&#x27;S Sporting Goods, wheeleez.com, Tractor Supply Company, Home Depot</td>
+        </tr>
+        <tr>
+          <td class="score">42</td>
+          <td><strong>beach wagon balloon wheels for coastal Florida shoppers</strong><span>The Beach Wagon Balloon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season.</span></td>
+          <td>44</td>
+          <td>$39.99-$415.99</td>
+          <td>4.27</td>
+          <td>Review scan not wired yet</td>
+          <td>Home Depot, Target, Tractor Supply Company, Lowe&#x27;s</td>
+        </tr></tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

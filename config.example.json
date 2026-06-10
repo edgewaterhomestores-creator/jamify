@@ -1,0 +1,27 @@
+{
+  "serpapi_key": "PASTE_SERPAPI_KEY_HERE",
+  "anthropic_key": "",
+  "search_mode": "top_trends",
+  "search_location": "Edgewater, Florida, United States",
+  "market_locations": [
+    "Florida",
+    "Volusia County Florida",
+    "Edgewater Florida",
+    "New Smyrna Beach Florida",
+    "Oak Hill Florida",
+    "Titusville Florida"
+  ],
+  "customer_type": "coastal Florida shoppers, beach families, boaters, vacation rental owners",
+  "details": "easy to ship useful for heat storms beach boating mosquitoes",
+  "avoid": "large fragile expensive returns",
+  "max_searches": 18,
+  "cache_days": 7,
+  "seed_keywords": [
+    "beach wagon balloon wheels",
+    "mosquito repellent patio fan",
+    "portable shade canopy",
+    "waterproof phone pouch",
+    "solar dock lights",
+    "cooling towels"
+  ]
+}

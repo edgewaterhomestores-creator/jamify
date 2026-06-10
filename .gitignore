@@ -1,0 +1,5 @@
+config.json
+serpapi_cache.json
+trend-research-public.zip
+__pycache__/
+*.pyc

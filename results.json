@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "generated_on": "2026-06-10",
+    "mode": "live",
+    "data_status": "Live Google Shopping data",
+    "data_note": "Real price, seller, and rating data came from SerpApi Google Shopping. Trend growth and review pain-point scanning are still under development.",
+    "markets": [
+      "Florida",
+      "Volusia County Florida",
+      "Edgewater Florida",
+      "New Smyrna Beach Florida",
+      "Oak Hill Florida",
+      "Titusville Florida"
+    ],
+    "search_location": "Edgewater, Florida, United States",
+    "searched_keywords": [
+      "beach wagon balloon wheels",
+      "beach wagon balloon wheels for coastal Florida shoppers"
+    ]
+  },
+  "rows": [
+    {
+      "score": 42,
+      "keyword": "beach wagon balloon wheels",
+      "sellers": 56,
+      "price_low": 37.3,
+      "price_high": 899.99,
+      "avg_rating": 4.33,
+      "trend_growth": 50,
+      "pain_points": "Review scan not wired yet",
+      "slogans": [
+        "The Beach Wagon Balloon Wheels Everyone Will Want Next Season.",
+        "Stop Settling. Upgrade to the Beach Wagon Balloon Wheels Done Right.",
+        "Beach Wagon Balloon Wheels: Solves What the Cheap Ones Can't.",
+        "Built for Real Life - Beach Wagon Balloon Wheels That Lasts.",
+        "Get Yours Before Everyone Else Does."
+      ],
+      "sample_titles": [
+        "DBX Beach Wagon with Sand Wheels",
+        "Wheeleez WZ1-30UA PU Beach Wheel",
+        "Kahuna Wagons Balloon Beach Tires Set of 7/8\" Hub"
+      ],
+      "sample_sources": [
+        "DICK'S Sporting Goods",
+        "wheeleez.com",
+        "Tractor Supply Company",
+        "Home Depot"
+      ],
+      "data_source": "SerpApi Google Shopping (cached)"
+    },
+    {
+      "score": 42,
+      "keyword": "beach wagon balloon wheels for coastal Florida shoppers",
+      "sellers": 44,
+      "price_low": 39.99,
+      "price_high": 415.99,
+      "avg_rating": 4.27,
+      "trend_growth": 50,
+      "pain_points": "Review scan not wired yet",
+      "slogans": [
+        "The Beach Wagon Balloon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season.",
+        "Stop Settling. Upgrade to the Beach Wagon Balloon Wheels For Coastal Florida Shoppers Done Right.",
+        "Beach Wagon Balloon Wheels For Coastal Florida Shoppers: Solves What the Cheap Ones Can't.",
+        "Built for Real Life - Beach Wagon Balloon Wheels For Coastal Florida Shoppers That Lasts.",
+        "Get Yours Before Everyone Else Does."
+      ],
+      "sample_titles": [
+        "SKYSHALO Beach Balloon Wheels, 15.7 in. Replacement Sand Tires, TPU Cart Tires for Kayak Dolly, Canoe Cart and Buggy",
+        "Gdlf Foldable Beach Cart",
+        "Kahuna Wagons Balloon Beach Tires Set of 7/8\" Hub"
+      ],
+      "sample_sources": [
+        "Home Depot",
+        "Target",
+        "Tractor Supply Company",
+        "Lowe's"
+      ],
+      "data_source": "SerpApi Google Shopping (cached)"
+    }
+  ]
+}
