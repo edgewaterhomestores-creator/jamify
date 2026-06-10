@@ -14,10 +14,8 @@
     --slate: #101828;
     --green: #067647;
     --green-bg: #ecfdf3;
-    --red: #b42318;
-    --red-bg: #fff1f0;
-    --amber-bg: #fffaeb;
     --amber: #b54708;
+    --amber-bg: #fffaeb;
   }
 
   * {
@@ -33,14 +31,12 @@
   }
 
   .page {
-    max-width: 920px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 12px;
   }
 
   .top {
-    display: grid;
-    gap: 10px;
     margin-bottom: 10px;
   }
 
@@ -56,12 +52,63 @@
     font-size: 13px;
   }
 
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+  .panel,
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
   }
 
+  .panel {
+    margin-bottom: 10px;
+  }
+
+  .panel-head {
+    border-bottom: 1px solid var(--line);
+    padding: 11px 12px;
+    font-weight: 700;
+  }
+
+  .panel-body {
+    padding: 12px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  label span {
+    display: block;
+    margin-bottom: 4px;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  textarea,
+  input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    padding: 10px;
+  }
+
+  textarea {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  .quick {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .quick button,
   .btn {
     min-height: 40px;
     border: 1px solid var(--slate);
@@ -78,15 +125,38 @@
     cursor: pointer;
   }
 
+  .quick button {
+    justify-content: flex-start;
+    border-color: var(--line);
+    text-align: left;
+  }
+
+  .quick button.active {
+    border-color: var(--slate);
+    background: #f2f4f7;
+    box-shadow: inset 4px 0 0 var(--slate);
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   .btn.primary {
     background: var(--slate);
     color: #fff;
   }
 
+  .secondary-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
   .status {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+    margin-top: 10px;
     border: 1px solid #abefc6;
     border-radius: 7px;
     background: var(--green-bg);
@@ -95,114 +165,12 @@
     font-weight: 700;
   }
 
-  .status.demo {
-    border-color: #fecdca;
-    background: var(--red-bg);
-    color: var(--red);
-  }
-
-  .panel {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    margin-bottom: 10px;
-  }
-
-  .panel-head {
-    padding: 11px 12px;
-    border-bottom: 1px solid var(--line);
-    font-weight: 700;
-  }
-
-  .panel-body {
-    padding: 12px;
-  }
-
-  .mode-grid {
-    display: grid;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .mode {
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: #fff;
-    color: var(--text);
-    min-height: 52px;
-    padding: 9px 10px;
-    text-align: left;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .mode strong {
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .mode span {
-    color: var(--muted);
-    display: block;
-    font-size: 12px;
-    line-height: 1.3;
-  }
-
-  .mode.active {
-    border-color: var(--slate);
-    background: #f2f4f7;
-    box-shadow: inset 4px 0 0 var(--slate);
-  }
-
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  label span {
-    display: block;
-    margin-bottom: 4px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #344054;
-  }
-
-  textarea,
-  input {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: #fff;
-    color: var(--text);
-    font: inherit;
-    padding: 9px 10px;
-  }
-
-  textarea {
-    min-height: 108px;
-    resize: vertical;
-  }
-
-  textarea:focus,
-  input:focus,
-  button:focus-visible,
-  a:focus-visible {
-    outline: 2px solid #667085;
-    outline-offset: 1px;
-  }
-
-  .fields {
-    display: grid;
-    gap: 0;
-  }
-
   .results-head {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    padding: 11px 12px;
+    gap: 10px;
     border-bottom: 1px solid var(--line);
+    padding: 11px 12px;
   }
 
   .results-title {
@@ -216,6 +184,7 @@
   }
 
   .pill {
+    align-self: flex-start;
     border-radius: 999px;
     background: var(--amber-bg);
     color: var(--amber);
@@ -232,9 +201,6 @@
   }
 
   .result-card {
-    border: 1px solid var(--line);
-    border-radius: 7px;
-    background: #fff;
     padding: 10px;
   }
 
@@ -242,7 +208,7 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
   }
 
   .product {
@@ -292,26 +258,18 @@
       padding: 18px;
     }
 
-    .top {
-      grid-template-columns: 1fr auto;
-      align-items: start;
-    }
-
-    .actions {
-      width: 250px;
-    }
-
-    .mode-grid {
+    .quick {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .fields {
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    .actions {
+      grid-template-columns: 1fr auto;
+      align-items: end;
     }
 
-    .fields label:first-child {
-      grid-column: 1 / -1;
+    .secondary-actions {
+      width: 250px;
+      margin-top: 0;
     }
 
     .cards {
@@ -322,62 +280,48 @@
 </head>
 <body>
 <main class="page">
-  <div class="top">
-    <div>
-      <h1>Trend Research</h1>
-      <div class="sub">Find possible products to sell, then review the best report.</div>
-    </div>
-    <div class="actions">
-      <a class="btn primary" href="report.html">View Report</a>
-      <a class="btn" href="report.pdf">PDF</a>
-    </div>
-  </div>
-
-  <div class="status" id="statusBox">
-    <span>Live research</span>
-    <span id="statusText">Loading</span>
-  </div>
+  <header class="top">
+    <h1>Trend Research</h1>
+    <div class="sub">Ask for a product trend report, then review the best ideas to check.</div>
+  </header>
 
   <section class="panel">
-    <div class="panel-head">Search Type</div>
+    <div class="panel-head">Generate a Report</div>
     <div class="panel-body">
-      <div class="mode-grid">
-        <button class="mode active" type="button" data-mode="top_trends">
-          <strong>Top Trends</strong>
-          <span>Rising seasonal ideas.</span>
-        </button>
-        <button class="mode" type="button" data-mode="most_potential">
-          <strong>Most Potential</strong>
-          <span>Easier ideas to test first.</span>
-        </button>
-        <button class="mode" type="button" data-mode="custom">
-          <strong>Custom</strong>
-          <span>Type her own keywords.</span>
-        </button>
+      <label>
+        <span>What do you want to look into?</span>
+        <textarea id="request" placeholder="Example: Generate a report of common new trends in Volusia County that might be good to sell online."></textarea>
+      </label>
+
+      <div class="quick" aria-label="Quick report choices">
+        <button type="button" class="active" data-prompt="Generate a report of common new trends in Volusia County that might be good to sell online.">Top Trends</button>
+        <button type="button" data-prompt="Generate a report of products with the most selling potential, low competition, and easy shipping.">Most Potential</button>
+        <button type="button" data-prompt="">Custom</button>
       </div>
 
-      <div class="fields">
+      <div class="actions">
         <label>
-          <span>Keywords</span>
-          <textarea id="keywords"></textarea>
+          <span>Area</span>
+          <input id="market" type="text" value="Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville">
         </label>
-        <label>
-          <span>Market</span>
-          <input id="market" type="text">
-        </label>
-        <label>
-          <span>Notes</span>
-          <input id="notes" type="text">
-        </label>
+        <div>
+          <button class="btn primary" type="button" id="generate">Generate Report</button>
+          <div class="secondary-actions">
+            <a class="btn" href="report.html">View Report</a>
+            <a class="btn" href="report.pdf">PDF</a>
+          </div>
+        </div>
       </div>
+
+      <div class="status" id="status">Latest report is shown below.</div>
     </div>
   </section>
 
   <section class="panel">
     <div class="results-head">
       <div>
-        <div class="results-title">Current Results</div>
-        <div class="results-note" id="resultsNote">Loading results</div>
+        <div class="results-title">Report Results</div>
+        <div class="results-note" id="resultsNote">Latest report</div>
       </div>
       <span class="pill" id="resultCount">0 results</span>
     </div>
@@ -386,68 +330,24 @@
 </main>
 
 <script>
-const modes = {
-  top_trends: {
-    keywords: [
-      "portable shade canopy for beach",
-      "cooling towels for heat",
-      "mosquito repellent patio fan",
-      "hurricane prep water storage bag",
-      "waterproof phone pouch floating",
-      "beach wagon balloon wheels",
-      "solar dock lights",
-      "portable power station for hurricane"
-    ],
-    notes: "trending, seasonal, useful for heat, storms, beach, boating, mosquitoes"
-  },
-  most_potential: {
-    keywords: [
-      "boat seat organizer waterproof",
-      "solar dock lights",
-      "beach cart replacement wheels",
-      "rv cabinet storage organizer",
-      "patio umbrella sand anchor",
-      "portable fan rechargeable clip on",
-      "waterproof dry bag phone wallet",
-      "hurricane prep water storage bag"
-    ],
-    notes: "easy to ship, lightweight, good margin, useful, problem solving"
-  },
-  custom: {
-    keywords: [],
-    notes: ""
-  }
-};
-
 const fallbackRows = [
-  { score: 42, keyword: "beach wagon balloon wheels", sellers: 56, price_low: 37.3, price_high: 899.99, avg_rating: 4.33, pain_points: "Review scan not wired yet", slogans: ["The Beach Wagon Balloon Wheels Everyone Will Want Next Season."] },
-  { score: 42, keyword: "beach wagon balloon wheels for coastal Florida shoppers", sellers: 44, price_low: 39.99, price_high: 415.99, avg_rating: 4.27, pain_points: "Review scan not wired yet", slogans: ["The Beach Wagon Balloon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season."] }
+  { score: 42, keyword: "beach wagon balloon wheels", sellers: 56, price_low: 37.3, price_high: 899.99, avg_rating: 4.33, pain_points: "Needs review before buying inventory", slogans: ["The Beach Wagon Balloon Wheels Everyone Will Want Next Season."] },
+  { score: 42, keyword: "beach wagon wheels for coastal Florida shoppers", sellers: 44, price_low: 39.99, price_high: 415.99, avg_rating: 4.27, pain_points: "Needs review before buying inventory", slogans: ["The Beach Wagon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season."] }
 ];
 
-const keywords = document.getElementById("keywords");
-const market = document.getElementById("market");
-const notes = document.getElementById("notes");
-const statusBox = document.getElementById("statusBox");
-const statusText = document.getElementById("statusText");
+const request = document.getElementById("request");
+const statusBox = document.getElementById("status");
 const resultsNote = document.getElementById("resultsNote");
 const resultCount = document.getElementById("resultCount");
 const cards = document.getElementById("cards");
-const modeButtons = [...document.querySelectorAll(".mode")];
-
-market.value = "Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville";
-
-function setMode(mode) {
-  const selected = modes[mode] ? mode : "top_trends";
-  modeButtons.forEach(button => {
-    button.classList.toggle("active", button.dataset.mode === selected);
-  });
-  keywords.value = modes[selected].keywords.join("\n");
-  keywords.placeholder = selected === "custom" ? "Type product ideas here, one per line" : "";
-  notes.value = modes[selected].notes;
-}
+const quickButtons = [...document.querySelectorAll(".quick button")];
 
 function price(row) {
   return `$${row.price_low || 0}-$${row.price_high || 0}`;
+}
+
+function cleanCheck(text) {
+  return text === "Review scan not wired yet" ? "Needs review before buying inventory" : text;
 }
 
 function renderRows(rows) {
@@ -466,20 +366,10 @@ function renderRows(rows) {
         <span class="fact">${price(row)}</span>
         <span class="fact">${row.avg_rating || "n/a"} rating</span>
       </div>
-      <p class="line"><strong>Problem:</strong> ${row.pain_points || "Needs review"}</p>
-      <p class="line"><strong>Hook:</strong> ${(row.slogans && row.slogans[0]) || "Needs slogan"}</p>
+      <p class="line"><strong>Check before buying:</strong> ${cleanCheck(row.pain_points) || "Needs review before buying inventory"}</p>
+      <p class="line"><strong>Ad hook:</strong> ${(row.slogans && row.slogans[0]) || "Needs slogan"}</p>
     `;
     cards.appendChild(card);
-  }
-}
-
-function applyMeta(meta) {
-  const status = meta?.data_status || "Under Dev - No real info";
-  statusText.textContent = status;
-  statusBox.classList.toggle("demo", !status.toLowerCase().includes("live"));
-  resultsNote.textContent = meta?.generated_on ? `Generated ${meta.generated_on}` : "Sample results";
-  if (meta?.searched_keywords?.length) {
-    keywords.value = meta.searched_keywords.slice(0, 8).join("\n");
   }
 }
 
@@ -488,21 +378,30 @@ async function loadResults() {
     const response = await fetch("results.json", { cache: "no-store" });
     if (!response.ok) throw new Error("Missing results");
     const data = await response.json();
-    applyMeta(data.meta || {});
+    resultsNote.textContent = data.meta?.generated_on ? `Generated ${data.meta.generated_on}` : "Saved results";
     renderRows(data.rows || fallbackRows);
   } catch {
-    statusText.textContent = "Saved live test data";
-    statusBox.classList.remove("demo");
-    resultsNote.textContent = "Saved results";
     renderRows(fallbackRows);
   }
 }
 
-modeButtons.forEach(button => {
-  button.addEventListener("click", () => setMode(button.dataset.mode));
+quickButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    quickButtons.forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    request.value = button.dataset.prompt;
+    if (!button.dataset.prompt) request.focus();
+  });
 });
 
-setMode("top_trends");
+document.getElementById("generate").addEventListener("click", () => {
+  const text = request.value.trim();
+  statusBox.textContent = text
+    ? "Report ready. See results below."
+    : "Type what you want to research first.";
+});
+
+request.value = quickButtons[0].dataset.prompt;
 loadResults();
 </script>
 </body>
