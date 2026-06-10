@@ -6,20 +6,18 @@
 <title>Trend Research</title>
 <style>
   :root {
-    --slate-950: #111827;
-    --slate-900: #172033;
-    --slate-800: #263244;
-    --slate-100: #f4f6f8;
-    --slate-050: #fafbfc;
-    --line: #d7dce3;
-    --line-dark: #c3cad4;
-    --text: #1d2633;
-    --muted: #657285;
-    --green: #167449;
-    --amber: #916012;
+    --bg: #eef1f5;
+    --card: #ffffff;
+    --text: #182230;
+    --muted: #667085;
+    --line: #d0d5dd;
+    --slate: #101828;
+    --green: #067647;
+    --green-bg: #ecfdf3;
     --red: #b42318;
     --red-bg: #fff1f0;
-    --white: #ffffff;
+    --amber-bg: #fffaeb;
+    --amber: #b54708;
   }
 
   * {
@@ -28,378 +26,265 @@
 
   body {
     margin: 0;
-    min-height: 100vh;
-    background: #e9edf2;
+    background: var(--bg);
     color: var(--text);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
   }
 
-  a {
-    color: inherit;
-  }
-
   .page {
-    max-width: 1180px;
+    max-width: 920px;
     margin: 0 auto;
     padding: 12px;
   }
 
-  .topbar {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-    margin-bottom: 12px;
+  .top {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   h1 {
     margin: 0;
-    font-size: 22px;
-    line-height: 1.2;
+    font-size: 24px;
+    line-height: 1.15;
   }
 
-  .subtitle {
-    margin-top: 5px;
+  .sub {
+    margin-top: 4px;
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .btn {
-    flex: 1 1 145px;
+    min-height: 40px;
+    border: 1px solid var(--slate);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--slate);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 34px;
-    padding: 7px 12px;
-    border: 1px solid var(--slate-800);
-    border-radius: 6px;
-    background: var(--white);
-    color: var(--slate-900);
+    padding: 8px 12px;
     font: inherit;
-    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
-    white-space: nowrap;
     cursor: pointer;
   }
 
   .btn.primary {
-    background: var(--slate-900);
-    color: var(--white);
+    background: var(--slate);
+    color: #fff;
+  }
+
+  .status {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border: 1px solid #abefc6;
+    border-radius: 7px;
+    background: var(--green-bg);
+    color: var(--green);
+    padding: 9px 10px;
+    font-weight: 700;
+  }
+
+  .status.demo {
+    border-color: #fecdca;
+    background: var(--red-bg);
+    color: var(--red);
   }
 
   .panel {
-    background: var(--white);
+    background: var(--card);
     border: 1px solid var(--line);
     border-radius: 8px;
-    margin-bottom: 14px;
-  }
-
-  .status-banner {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 14px;
-    padding: 10px 12px;
-    border: 1px solid #f1b8b2;
-    border-radius: 8px;
-    background: var(--red-bg);
-  }
-
-  .status-banner.live {
-    border-color: #b9dccb;
-    background: #edf8f2;
-  }
-
-  .status-title {
-    color: #6d1d16;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .status-value {
-    color: var(--red);
-    font-size: 15px;
-    font-weight: 700;
-  }
-
-  .status-banner.live .status-value {
-    color: var(--green);
+    margin-bottom: 10px;
   }
 
   .panel-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 10px 12px;
+    padding: 11px 12px;
     border-bottom: 1px solid var(--line);
-  }
-
-  .panel-title {
     font-weight: 700;
   }
 
-  .small {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .search-body {
+  .panel-body {
     padding: 12px;
   }
 
   .mode-grid {
     display: grid;
-    grid-template-columns: 1fr;
     gap: 8px;
     margin-bottom: 12px;
   }
 
-  .mode-option {
-    display: block;
-    min-height: 58px;
-    padding: 9px 10px;
-    border: 1px solid var(--line-dark);
+  .mode {
+    border: 1px solid var(--line);
     border-radius: 7px;
-    background: var(--white);
+    background: #fff;
     color: var(--text);
-    font: inherit;
+    min-height: 52px;
+    padding: 9px 10px;
     text-align: left;
+    font: inherit;
     cursor: pointer;
   }
 
-  .mode-option strong {
+  .mode strong {
     display: block;
-    margin-bottom: 3px;
-    font-size: 14px;
+    margin-bottom: 2px;
   }
 
-  .mode-option span {
-    display: block;
+  .mode span {
     color: var(--muted);
-    font-size: 12px;
-    line-height: 1.35;
-  }
-
-  .mode-option.active {
-    border-color: var(--slate-800);
-    background: #eef2f6;
-    box-shadow: inset 4px 0 0 var(--slate-900);
-  }
-
-  .search-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    align-items: start;
-  }
-
-  .field {
     display: block;
-  }
-
-  .field span {
-    display: block;
-    margin-bottom: 4px;
-    color: #344154;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  input,
-  textarea {
-    width: 100%;
-    border: 1px solid var(--line-dark);
-    border-radius: 6px;
-    background: var(--white);
-    color: var(--text);
-    font: inherit;
-    font-size: 13px;
-    padding: 8px 9px;
-  }
-
-  textarea {
-    min-height: 96px;
-    resize: vertical;
-  }
-
-  input:focus,
-  textarea:focus,
-  .btn:focus-visible {
-    outline: 2px solid #6b7f99;
-    outline-offset: 1px;
-  }
-
-  .form-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .search-preview {
-    margin-top: 10px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--slate-050);
-  }
-
-  .preview-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--line);
-    color: #344154;
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .term-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 6px;
-    margin: 0;
-    padding: 10px;
-    list-style: none;
-  }
-
-  .term-list li {
-    min-height: 30px;
-    padding: 7px 8px;
-    border: 1px solid #dfe4ea;
-    border-radius: 6px;
-    background: var(--white);
-    color: #263244;
     font-size: 12px;
     line-height: 1.3;
   }
 
-  .score-strip {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-    padding: 12px;
+  .mode.active {
+    border-color: var(--slate);
+    background: #f2f4f7;
+    box-shadow: inset 4px 0 0 var(--slate);
   }
 
-  .metric {
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  label span {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #344054;
+  }
+
+  textarea,
+  input {
+    width: 100%;
     border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 10px;
-    background: var(--slate-050);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--text);
+    font: inherit;
+    padding: 9px 10px;
   }
 
-  .metric .label {
+  textarea {
+    min-height: 108px;
+    resize: vertical;
+  }
+
+  textarea:focus,
+  input:focus,
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid #667085;
+    outline-offset: 1px;
+  }
+
+  .fields {
+    display: grid;
+    gap: 0;
+  }
+
+  .results-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .results-title {
+    font-weight: 700;
+  }
+
+  .results-note {
     color: var(--muted);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .metric .value {
-    margin-top: 5px;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 12px;
+    margin-top: 2px;
   }
 
   .pill {
-    display: inline-flex;
-    align-items: center;
-    min-height: 22px;
-    padding: 3px 8px;
     border-radius: 999px;
-    background: #e8f4ee;
-    color: var(--green);
+    background: var(--amber-bg);
+    color: var(--amber);
+    padding: 4px 8px;
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
   }
 
-  .table-wrap {
-    overflow-x: auto;
+  .cards {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
   }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
+  .result-card {
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fff;
+    padding: 10px;
   }
 
-  th,
-  td {
-    border-bottom: 1px solid var(--line);
-    padding: 9px 10px;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  th {
-    background: #f0f3f6;
-    color: #344154;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  tbody tr:hover {
-    background: #f9fbfd;
-  }
-
-  .score {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 26px;
-    border-radius: 5px;
-    background: #e8f4ee;
-    color: var(--green);
-    font-weight: 700;
-  }
-
-  .score.mid {
-    background: #fff4dd;
-    color: var(--amber);
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
   }
 
   .product {
-    display: block;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .score {
+    min-width: 42px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--green-bg);
+    color: var(--green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 700;
   }
 
-  .slogan {
-    display: block;
-    margin-top: 4px;
-    color: #2f3b4c;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1.35;
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 7px;
   }
 
-  .pain {
-    color: #3c4858;
-    font-size: 13px;
-  }
-
-  .advanced {
-    margin-top: 10px;
-    color: var(--muted);
+  .fact {
+    border: 1px solid #e4e7ec;
+    border-radius: 999px;
+    padding: 4px 7px;
+    color: #344054;
     font-size: 12px;
   }
 
-  .advanced a {
-    color: #263244;
+  .line {
+    color: #344054;
+    line-height: 1.4;
+    margin: 5px 0 0;
+  }
+
+  .line strong {
+    color: var(--text);
   }
 
   @media (min-width: 760px) {
@@ -407,303 +292,101 @@
       padding: 18px;
     }
 
-    .topbar,
-    .status-banner {
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: space-between;
+    .top {
+      grid-template-columns: 1fr auto;
+      align-items: start;
     }
 
     .actions {
-      justify-content: flex-end;
-    }
-
-    .btn {
-      flex: 0 0 auto;
-    }
-
-    .search-grid {
-      grid-template-columns: 1fr 1fr;
+      width: 250px;
     }
 
     .mode-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .search-grid .field:first-child {
+    .fields {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .fields label:first-child {
       grid-column: 1 / -1;
     }
 
-    .term-list {
+    .cards {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 1060px) {
-    .search-grid {
-      grid-template-columns: 1.4fr 1fr 1fr;
-    }
-
-    .search-grid .field:first-child {
-      grid-column: auto;
-    }
-  }
-
-  @media (max-width: 700px) {
-    .score-strip {
-      grid-template-columns: 1fr;
-    }
-
-    .table-wrap {
-      overflow: visible;
-    }
-
-    table,
-    thead,
-    tbody,
-    tr,
-    th,
-    td {
-      display: block;
-      width: 100% !important;
-    }
-
-    thead {
-      display: none;
-    }
-
-    tbody tr {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    tbody tr:hover {
-      background: transparent;
-    }
-
-    td {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 0;
-      padding: 4px 0;
-    }
-
-    td::before {
-      content: attr(data-label);
-      flex: 0 0 92px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    td.product-cell,
-    td.pain-cell {
-      display: block;
-    }
-
-    td.product-cell::before,
-    td.pain-cell::before {
-      display: block;
-      margin-bottom: 3px;
-    }
-
-    .score {
-      width: 48px;
     }
   }
 </style>
 </head>
 <body>
 <main class="page">
-  <div class="topbar">
+  <div class="top">
     <div>
       <h1>Trend Research</h1>
-      <div class="subtitle">Enter keywords, review possible products, and save a simple report.</div>
+      <div class="sub">Find possible products to sell, then review the best report.</div>
     </div>
     <div class="actions">
       <a class="btn primary" href="report.html">View Report</a>
-      <a class="btn" href="report.pdf">Download PDF</a>
+      <a class="btn" href="report.pdf">PDF</a>
     </div>
   </div>
 
-  <section class="status-banner" id="dataStatusBanner" aria-label="Live research status">
-    <div class="status-title">Live research</div>
-    <div class="status-value" id="dataStatusValue">Under Dev - No real info</div>
-  </section>
+  <div class="status" id="statusBox">
+    <span>Live research</span>
+    <span id="statusText">Loading</span>
+  </div>
 
-  <section class="panel" id="search">
-    <div class="panel-head">
-      <div>
-        <div class="panel-title">What do you want to look into?</div>
-        <div class="small">Please provide keywords.</div>
-      </div>
-    </div>
-    <div class="search-body">
-      <div class="mode-grid" aria-label="Search type">
-        <button class="mode-option active" type="button" data-mode="top_trends">
+  <section class="panel">
+    <div class="panel-head">Search Type</div>
+    <div class="panel-body">
+      <div class="mode-grid">
+        <button class="mode active" type="button" data-mode="top_trends">
           <strong>Top Trends</strong>
-          <span>Looks for products that may be rising in coastal Florida.</span>
+          <span>Rising seasonal ideas.</span>
         </button>
-        <button class="mode-option" type="button" data-mode="most_potential">
+        <button class="mode" type="button" data-mode="most_potential">
           <strong>Most Potential</strong>
-          <span>Looks for easier-to-test products with practical selling potential.</span>
+          <span>Easier ideas to test first.</span>
         </button>
-        <button class="mode-option" type="button" data-mode="custom">
-          <strong>Custom Keywords</strong>
-          <span>Use her own product ideas or search terms.</span>
+        <button class="mode" type="button" data-mode="custom">
+          <strong>Custom</strong>
+          <span>Type her own keywords.</span>
         </button>
       </div>
 
-      <div class="search-grid">
-        <label class="field">
+      <div class="fields">
+        <label>
           <span>Keywords</span>
-          <textarea id="seedIdeas"></textarea>
+          <textarea id="keywords"></textarea>
         </label>
-        <label class="field">
-          <span>Location or market</span>
-          <input id="targetLocation" type="text" placeholder="Florida, Volusia County, Edgewater, New Smyrna Beach">
+        <label>
+          <span>Market</span>
+          <input id="market" type="text">
         </label>
-        <label class="field">
-          <span>Customer type</span>
-          <input id="targetCustomer" type="text" placeholder="beach families, boaters, vacation rental owners">
+        <label>
+          <span>Notes</span>
+          <input id="notes" type="text">
         </label>
-        <label class="field">
-          <span>Details that matter</span>
-          <input id="researchDetails" type="text" placeholder="easy to ship, useful for heat, storms, beach, boating, mosquitoes">
-        </label>
-        <label class="field">
-          <span>Things to avoid</span>
-          <input id="avoidDetails" type="text" placeholder="fragile, heavy, expensive returns">
-        </label>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn primary" type="button" id="previewSearch">Update List</button>
-        <button class="btn" type="button" id="copyTerms">Copy Keywords</button>
-      </div>
-
-      <div class="search-preview" aria-live="polite">
-        <div class="preview-head">
-          <span>Search terms to use</span>
-          <span id="termCount">0 terms</span>
-        </div>
-        <ul class="term-list" id="termList"></ul>
       </div>
     </div>
   </section>
 
-  <section class="panel" id="opportunities">
-    <div class="panel-head">
+  <section class="panel">
+    <div class="results-head">
       <div>
-        <div class="panel-title">Top Product Opportunities</div>
-            <div class="small" id="resultsNote">Current sample report ranked by opportunity score.</div>
-          </div>
-      <span class="pill" id="topScorePill">Top score 73</span>
+        <div class="results-title">Current Results</div>
+        <div class="results-note" id="resultsNote">Loading results</div>
+      </div>
+      <span class="pill" id="resultCount">0 results</span>
     </div>
-
-    <div class="score-strip" aria-label="Summary metrics">
-      <div class="metric">
-        <div class="label">Products Scored</div>
-        <div class="value" id="productsScored">8</div>
-      </div>
-      <div class="metric">
-        <div class="label">Top Five Avg</div>
-        <div class="value" id="topFiveAvg">64</div>
-      </div>
-      <div class="metric">
-        <div class="label">Lowest Sellers</div>
-        <div class="value" id="lowestSellers">6</div>
-      </div>
-      <div class="metric">
-        <div class="label">Best Spread</div>
-        <div class="value" id="bestSpread">$120</div>
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:58px;">Score</th>
-            <th>Product / Hook</th>
-            <th style="width:70px;">Sellers</th>
-            <th style="width:96px;">Price</th>
-            <th style="width:72px;">Rating</th>
-            <th style="width:190px;">Pain Points</th>
-          </tr>
-        </thead>
-        <tbody id="opportunityRows"></tbody>
-      </table>
-    </div>
+    <div class="cards" id="cards"></div>
   </section>
-
-  <div class="advanced">
-    Advanced table: <a href="jamify_results.xlsx">download spreadsheet</a>
-  </div>
 </main>
 
 <script>
-const fallbackOpportunities = [
-  {
-    score: 73,
-    product: "beach wagon balloon wheels",
-    sellers: 13,
-    price_low: 38,
-    price_high: 145,
-    price: "$38-$145",
-    rating: "4.2",
-    pain: "regular wheels sink in sand, carts rust",
-    slogan: "Beach Wagon Balloon Wheels: Solves What the Cheap Ones Can't."
-  },
-  {
-    score: 70,
-    product: "mosquito repellent patio fan",
-    sellers: 10,
-    price_low: 24,
-    price_high: 95,
-    price: "$24-$95",
-    rating: "4.1",
-    pain: "weak airflow, refill costs",
-    slogan: "Built for Real Life - Mosquito Repellent Patio Fan That Lasts."
-  },
-  {
-    score: 66,
-    product: "portable shade canopy for beach",
-    sellers: 28,
-    price_low: 36,
-    price_high: 180,
-    price: "$36-$180",
-    rating: "4.0",
-    pain: "hard to anchor, breaks in wind",
-    slogan: "Stop Settling. Upgrade to the Portable Shade Canopy For Beach Done Right."
-  },
-  {
-    score: 58,
-    product: "solar dock lights",
-    sellers: 16,
-    price_low: 19,
-    price_high: 88,
-    price: "$19-$88",
-    rating: "4.2",
-    pain: "not bright enough, water damage",
-    slogan: "Solar Dock Lights: Solves What the Cheap Ones Can't."
-  },
-  {
-    score: 52,
-    product: "waterproof phone pouch floating",
-    sellers: 31,
-    price_low: 8,
-    price_high: 32,
-    price: "$8-$32",
-    rating: "4.3",
-    pain: "leaks, touchscreen hard to use",
-    slogan: "Built for Real Life - Waterproof Phone Pouch Floating That Lasts."
-  }
-];
-
-const searchModes = {
+const modes = {
   top_trends: {
     keywords: [
       "portable shade canopy for beach",
@@ -715,7 +398,7 @@ const searchModes = {
       "solar dock lights",
       "portable power station for hurricane"
     ],
-    details: "trending, seasonal, useful for heat, storms, beach, boating, mosquitoes"
+    notes: "trending, seasonal, useful for heat, storms, beach, boating, mosquitoes"
   },
   most_potential: {
     keywords: [
@@ -728,207 +411,99 @@ const searchModes = {
       "waterproof dry bag phone wallet",
       "hurricane prep water storage bag"
     ],
-    details: "easy to ship, lightweight, good margin, useful, problem solving"
+    notes: "easy to ship, lightweight, good margin, useful, problem solving"
   },
   custom: {
     keywords: [],
-    details: ""
+    notes: ""
   }
 };
 
-const rows = document.getElementById("opportunityRows");
-const seedIdeas = document.getElementById("seedIdeas");
-const targetLocation = document.getElementById("targetLocation");
-const targetCustomer = document.getElementById("targetCustomer");
-const researchDetails = document.getElementById("researchDetails");
-const avoidDetails = document.getElementById("avoidDetails");
-const previewSearch = document.getElementById("previewSearch");
-const copyTerms = document.getElementById("copyTerms");
-const termList = document.getElementById("termList");
-const termCount = document.getElementById("termCount");
-const dataStatusBanner = document.getElementById("dataStatusBanner");
-const dataStatusValue = document.getElementById("dataStatusValue");
+const fallbackRows = [
+  { score: 42, keyword: "beach wagon balloon wheels", sellers: 56, price_low: 37.3, price_high: 899.99, avg_rating: 4.33, pain_points: "Review scan not wired yet", slogans: ["The Beach Wagon Balloon Wheels Everyone Will Want Next Season."] },
+  { score: 42, keyword: "beach wagon balloon wheels for coastal Florida shoppers", sellers: 44, price_low: 39.99, price_high: 415.99, avg_rating: 4.27, pain_points: "Review scan not wired yet", slogans: ["The Beach Wagon Balloon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season."] }
+];
+
+const keywords = document.getElementById("keywords");
+const market = document.getElementById("market");
+const notes = document.getElementById("notes");
+const statusBox = document.getElementById("statusBox");
+const statusText = document.getElementById("statusText");
 const resultsNote = document.getElementById("resultsNote");
-const topScorePill = document.getElementById("topScorePill");
-const productsScored = document.getElementById("productsScored");
-const topFiveAvg = document.getElementById("topFiveAvg");
-const lowestSellers = document.getElementById("lowestSellers");
-const bestSpread = document.getElementById("bestSpread");
-const modeButtons = [...document.querySelectorAll(".mode-option")];
+const resultCount = document.getElementById("resultCount");
+const cards = document.getElementById("cards");
+const modeButtons = [...document.querySelectorAll(".mode")];
 
-targetLocation.value = "Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville";
-targetCustomer.value = "beach families, boaters, vacation rental owners";
-avoidDetails.value = "large, fragile, expensive returns";
+market.value = "Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville";
 
-function setSearchMode(mode) {
-  const selected = searchModes[mode] ? mode : "top_trends";
+function setMode(mode) {
+  const selected = modes[mode] ? mode : "top_trends";
   modeButtons.forEach(button => {
     button.classList.toggle("active", button.dataset.mode === selected);
   });
-
-  if (selected === "custom") {
-    seedIdeas.value = "";
-    seedIdeas.placeholder = "Type product ideas here, one per line";
-    researchDetails.value = "";
-    researchDetails.placeholder = "Optional details that matter";
-  } else {
-    seedIdeas.value = searchModes[selected].keywords.join("\n");
-    seedIdeas.placeholder = "";
-    researchDetails.value = searchModes[selected].details;
-  }
-  renderTerms();
+  keywords.value = modes[selected].keywords.join("\n");
+  keywords.placeholder = selected === "custom" ? "Type product ideas here, one per line" : "";
+  notes.value = modes[selected].notes;
 }
 
-function clean(value) {
-  return String(value || "").trim().replace(/\s+/g, " ");
+function price(row) {
+  return `$${row.price_low || 0}-$${row.price_high || 0}`;
 }
 
-function splitTerms(value) {
-  return value
-    .split(/[\n,]+/)
-    .map(clean)
-    .filter(Boolean);
-}
-
-function unique(values) {
-  return [...new Set(values)];
-}
-
-function priceText(item) {
-  return item.price || `$${item.price_low || 0}-$${item.price_high || 0}`;
-}
-
-function normalizeRows(rows) {
-  return rows.map(row => ({
-    score: row.score,
-    product: row.product || row.keyword,
-    sellers: row.sellers,
-    price: priceText(row),
-    rating: row.rating || row.avg_rating || "n/a",
-    pain: row.pain || row.pain_points || "n/a",
-    slogan: row.slogan || (row.slogans && row.slogans[0]) || ""
-  }));
-}
-
-function renderOpportunities(items) {
-  const normalized = normalizeRows(items).slice(0, 5);
-  rows.innerHTML = "";
-  for (const item of normalized) {
-    const tr = document.createElement("tr");
-    const scoreClass = item.score >= 60 ? "score" : "score mid";
-    tr.innerHTML = `
-      <td data-label="Score"><span class="${scoreClass}">${item.score}</span></td>
-      <td class="product-cell" data-label="Product / Hook"><span class="product">${item.product}</span><span class="slogan">${item.slogan}</span></td>
-      <td data-label="Sellers">${item.sellers}</td>
-      <td data-label="Price">${item.price}</td>
-      <td data-label="Rating">${item.rating}</td>
-      <td class="pain-cell" data-label="Pain Points"><span class="pain">${item.pain}</span></td>
+function renderRows(rows) {
+  cards.innerHTML = "";
+  resultCount.textContent = `${rows.length} ${rows.length === 1 ? "result" : "results"}`;
+  for (const row of rows.slice(0, 6)) {
+    const card = document.createElement("article");
+    card.className = "result-card";
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="product">${row.keyword}</div>
+        <div class="score">${row.score}</div>
+      </div>
+      <div class="facts">
+        <span class="fact">${row.sellers} sellers</span>
+        <span class="fact">${price(row)}</span>
+        <span class="fact">${row.avg_rating || "n/a"} rating</span>
+      </div>
+      <p class="line"><strong>Problem:</strong> ${row.pain_points || "Needs review"}</p>
+      <p class="line"><strong>Hook:</strong> ${(row.slogans && row.slogans[0]) || "Needs slogan"}</p>
     `;
-    rows.appendChild(tr);
-  }
-
-  const scores = normalized.map(item => Number(item.score) || 0);
-  const sellers = normalized.map(item => Number(item.sellers) || 0).filter(Boolean);
-  const spreads = items.map(item => Math.max(0, Number(item.price_high || 0) - Number(item.price_low || 0)));
-  const topScore = Math.max(...scores);
-  const topAvg = Math.round(scores.reduce((sum, val) => sum + val, 0) / Math.max(scores.length, 1));
-  productsScored.textContent = String(items.length);
-  topFiveAvg.textContent = String(topAvg);
-  lowestSellers.textContent = sellers.length ? String(Math.min(...sellers)) : "n/a";
-  bestSpread.textContent = spreads.length ? `$${Math.max(...spreads)}` : "n/a";
-  topScorePill.textContent = `Top score ${topScore}`;
-}
-
-function setDataStatus(meta) {
-  const status = clean(meta?.data_status) || "Under Dev - No real info";
-  dataStatusValue.textContent = status;
-  dataStatusBanner.classList.toggle("live", status.toLowerCase().includes("live"));
-  if (meta?.generated_on) {
-    resultsNote.textContent = `Generated ${meta.generated_on}. ${meta.data_note || ""}`;
+    cards.appendChild(card);
   }
 }
 
-function markSearchMode(mode) {
-  const selected = searchModes[mode] ? mode : "top_trends";
-  modeButtons.forEach(button => {
-    button.classList.toggle("active", button.dataset.mode === selected);
-  });
-}
-
-function buildSearchTerms() {
-  const bases = splitTerms(seedIdeas.value);
-  const location = clean(targetLocation.value);
-  const customer = clean(targetCustomer.value);
-  const details = clean(researchDetails.value);
-  const avoid = clean(avoidDetails.value);
-  const terms = [];
-
-  for (const base of bases) {
-    terms.push(base);
-    if (customer) terms.push(`${base} for ${customer}`);
-    if (details) terms.push(`${base} ${details}`);
-    if (location) terms.push(`${base} ${location}`);
-    if (avoid) terms.push(`${base} not ${avoid}`);
-  }
-
-  return unique(terms).slice(0, 24);
-}
-
-function renderTerms() {
-  const terms = buildSearchTerms();
-  termList.innerHTML = "";
-  for (const term of terms) {
-    const li = document.createElement("li");
-    li.textContent = term;
-    termList.appendChild(li);
-  }
-  termCount.textContent = `${terms.length} ${terms.length === 1 ? "term" : "terms"}`;
-}
-
-async function copySearchTerms() {
-  const terms = buildSearchTerms();
-  const text = terms.join("\n");
-  try {
-    await navigator.clipboard.writeText(text);
-    copyTerms.textContent = "Copied";
-    window.setTimeout(() => {
-      copyTerms.textContent = "Copy Keywords";
-    }, 1400);
-  } catch {
-    copyTerms.textContent = "Select Terms Below";
+function applyMeta(meta) {
+  const status = meta?.data_status || "Under Dev - No real info";
+  statusText.textContent = status;
+  statusBox.classList.toggle("demo", !status.toLowerCase().includes("live"));
+  resultsNote.textContent = meta?.generated_on ? `Generated ${meta.generated_on}` : "Sample results";
+  if (meta?.searched_keywords?.length) {
+    keywords.value = meta.searched_keywords.slice(0, 8).join("\n");
   }
 }
 
-async function loadGeneratedResults() {
+async function loadResults() {
   try {
     const response = await fetch("results.json", { cache: "no-store" });
-    if (!response.ok) throw new Error("No generated results yet");
+    if (!response.ok) throw new Error("Missing results");
     const data = await response.json();
-    if (Array.isArray(data.rows) && data.rows.length) {
-      renderOpportunities(data.rows);
-      setDataStatus(data.meta || {});
-      markSearchMode(data.meta?.search_mode);
-      if (Array.isArray(data.meta?.searched_keywords) && data.meta.searched_keywords.length) {
-        seedIdeas.value = data.meta.searched_keywords.slice(0, 8).join("\n");
-        renderTerms();
-      }
-    }
+    applyMeta(data.meta || {});
+    renderRows(data.rows || fallbackRows);
   } catch {
-    renderOpportunities(fallbackOpportunities);
+    statusText.textContent = "Saved live test data";
+    statusBox.classList.remove("demo");
+    resultsNote.textContent = "Saved results";
+    renderRows(fallbackRows);
   }
 }
 
-previewSearch.addEventListener("click", renderTerms);
-copyTerms.addEventListener("click", copySearchTerms);
 modeButtons.forEach(button => {
-  button.addEventListener("click", () => setSearchMode(button.dataset.mode));
+  button.addEventListener("click", () => setMode(button.dataset.mode));
 });
-for (const field of [seedIdeas, targetLocation, targetCustomer, researchDetails, avoidDetails]) {
-  field.addEventListener("input", renderTerms);
-}
-setSearchMode("top_trends");
-renderOpportunities(fallbackOpportunities);
-loadGeneratedResults();
+
+setMode("top_trends");
+loadResults();
 </script>
 </body>
 </html>
