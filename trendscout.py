@@ -135,6 +135,16 @@ def buyer_check(value):
     return value
 
 
+def research_links(keyword):
+    q = urllib.parse.quote_plus(clean(keyword))
+    return [
+        {"label": "Google Trends", "url": f"https://trends.google.com/trends/explore?geo=US&q={q}"},
+        {"label": "Reddit", "url": f"https://www.reddit.com/search/?q={q}"},
+        {"label": "Etsy", "url": f"https://www.etsy.com/search?q={q}"},
+        {"label": "Amazon", "url": f"https://www.amazon.com/s?k={q}"},
+    ]
+
+
 def load_cache():
     if not os.path.exists(CACHE_FILE):
         return {}
@@ -240,6 +250,8 @@ def serpapi_shopping(query, key, location, cache, cache_days=7):
         "source_count": len(set(sources)),
         "sample_titles": titles[:3],
         "sample_sources": unique(sources)[:4],
+        "research_links": research_links(query),
+        "cache_hit": cache_hit,
         "data_source": "SerpApi Google Shopping (cached)" if cache_hit else "SerpApi Google Shopping",
     }
 
@@ -305,6 +317,7 @@ def row_summary(r):
         "slogans": r["slogans"],
         "sample_titles": r.get("sample_titles", []),
         "sample_sources": r.get("sample_sources", []),
+        "research_links": r.get("research_links", research_links(r["keyword"])),
         "data_source": r.get("data_source", "Demo sample"),
     }
 
@@ -517,9 +530,15 @@ def main():
         products = []
         cache = load_cache()
         cache_days = int(cfg.get("cache_days", 7))
+        live_calls = 0
+        cache_hits = 0
         for kw in kws:
             try:
                 p = serpapi_shopping(kw, serp, search_location, cache, cache_days)
+                if p.get("cache_hit"):
+                    cache_hits += 1
+                else:
+                    live_calls += 1
                 if p["sellers"] < 1:
                     print(f"  skip {kw}: no shopping results")
                     continue
@@ -532,11 +551,25 @@ def main():
             sys.exit("No shopping results were found. Try broader keywords or run Top Trends.")
         data_status = "Live Google Shopping data"
         data_note = f"{preset['label']} search. Prices, sellers, and ratings came from Google Shopping. Before buying inventory, compare reviews, shipping cost, and current seller listings."
+        search_usage = {
+            "max_searches": int(cfg.get("max_searches", 3)),
+            "searched_terms": len(kws),
+            "returned_products": len(products),
+            "live_calls": live_calls,
+            "cache_hits": cache_hits,
+        }
     else:
         products = [dict(d, data_source="Demo sample") for d in DEMO]
         kws = [p["keyword"] for p in products]
         data_status = "Sample report only"
         data_note = f"{preset['label']} search. This is sample data only. Run live mode with a SerpApi key to use real shopping data."
+        search_usage = {
+            "max_searches": 0,
+            "searched_terms": 0,
+            "returned_products": len(products),
+            "live_calls": 0,
+            "cache_hits": 0,
+        }
         print("DEMO MODE - sample data only")
 
     for p in products:
@@ -558,6 +591,8 @@ def main():
         "markets": markets,
         "search_location": search_location,
         "searched_keywords": kws,
+        "search_usage": search_usage,
+        "source_summary": "Google Shopping data plus direct check links for Google Trends, Reddit, Etsy, and Amazon.",
     }
     outputs = write_outputs(products, meta)
     print(f"\nDone. {len(products)} products scored.")

@@ -1,6 +1,8 @@
 {
   "serpapi_key": "PASTE_SERPAPI_KEY_HERE",
   "anthropic_key": "",
+  "portal_users_path": "/opt/apps/customerportal/data/settings/users.json",
+  "allowed_users": ["jamie"],
   "search_mode": "top_trends",
   "search_location": "Edgewater, Florida, United States",
   "market_locations": [

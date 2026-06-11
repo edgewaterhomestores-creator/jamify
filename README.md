@@ -1,65 +1,53 @@
 TREND RESEARCH
 ==============
-Finds possible online-retail product ideas, scores opportunity 1-100,
-and publishes a simple dashboard/report.
+Private product-opportunity research tool for Jamie.
+
+WHAT IT DOES
+- Jamie logs in with the same staff user/password from the store portal.
+- Top Trends, Most Potential, and Custom can generate a fresh live report.
+- Each run is capped at 3 searches by default and has a 5 minute cooldown.
+- Current and previous reports can be viewed as HTML or PDF.
 
 DEFAULT MARKET
 Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville.
 
 SETUP
-pip install openpyxl reportlab
+pip install -r requirements.txt
 
-RUN SAMPLE DATA
-python trendscout.py
+Copy config.example.json to config.json and set:
+- serpapi_key
+- portal_users_path
+- allowed_users: ["jamie"]
 
-RUN LIVE SHOPPING DATA
-1. Copy config.example.json to config.json
-2. Paste a SerpApi key into config.json
-3. Run:
-   python trendscout.py live
-
-RUN THE CLICKABLE REPORT SERVER
-Set SERPAPI_KEY as an environment variable, then run:
-   python report_server.py
+RUN LOCALLY
+python report_server.py
 
 Open:
-   http://127.0.0.1:8099/
+http://127.0.0.1:8099/
 
-The Generate Report button posts to /api/run-report and refreshes the saved
-report files. It defaults to 3 SerpApi searches per click unless MAX_SEARCHES
-is set higher. It also defaults to a 5 minute cooldown between runs unless
-RUN_COOLDOWN_SECONDS is changed.
+SERVER NOTES
+Nginx must proxy the Jamify site to report_server.py. Do not serve results.json,
+report.html, report.pdf, top5_report.txt, or jamify_results.xlsx directly from
+/var/www, because those files must stay behind Jamie's login.
 
-PRESET RUNS
-python trendscout.py live top_trends
-python trendscout.py live most_potential
-
-The dashboard also has a Custom Keywords option for manual ideas.
-
-SAFER TEST RUN
-PowerShell:
-$env:SERPAPI_KEY="your_key_here"
-$env:MAX_SEARCHES="2"
-python trendscout.py live
-
-SEARCH USE CONTROL
-- max_searches limits how many SerpApi calls a live run can make.
-- cache_days keeps repeated searches in serpapi_cache.json so rerunning the
-  same query does not keep spending searches from this program.
-- Do not upload config.json or serpapi_cache.json to the public web folder.
+ENVIRONMENT CONTROLS
+- MAX_SEARCHES: paid search cap per report run. Default 3.
+- RUN_COOLDOWN_SECONDS: delay between report runs. Default 300.
+- PORTAL_USERS_PATH: path to the store portal users.json.
+- ALLOWED_USERS: comma-separated usernames allowed into this tool. Default jamie.
+- TREND_OUTPUT_DIR: where current report files are written.
+- TREND_STATE_DIR: where private run history is saved.
 
 OUTPUT FILES
-- index.html: phone-friendly dashboard
-- results.json: data used by the dashboard
-- report.html: easy browser report
-- report.pdf: printable/downloadable report
-- top5_report.txt: plain text backup
-- jamify_results.xlsx: advanced table
+- index.html: phone-friendly dashboard and login screen.
+- results.json: current report data.
+- report.html: printable browser report.
+- report.pdf: downloadable report.
+- top5_report.txt: plain text backup.
+- jamify_results.xlsx: advanced table.
 
-CURRENT LIVE DATA
-Live mode pulls Google Shopping prices, seller/result counts, ratings,
-sample product titles, and sources through SerpApi. Each run keeps a local
-cache so repeated searches do not keep spending searches from this program.
-
-SCORING
-Demand proxy 35% + low competition 30% + price spread 20% + quality gap 15%.
+DATA SOURCES
+Live reports use Google Shopping data through SerpApi for prices, seller/result
+counts, ratings, sample product titles, and sample stores. Each product also
+gets quick check links for Google Trends, Reddit, Etsy, and Amazon without
+spending extra searches.

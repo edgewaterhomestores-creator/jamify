@@ -36,7 +36,15 @@
     padding: 12px;
   }
 
+  .hidden {
+    display: none !important;
+  }
+
   .top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
     margin-bottom: 10px;
   }
 
@@ -50,6 +58,21 @@
     margin-top: 4px;
     color: var(--muted);
     font-size: 13px;
+  }
+
+  .login-panel {
+    max-width: 420px;
+    margin: 42px auto;
+    padding: 0 12px;
+  }
+
+  .userbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
   }
 
   .panel,
@@ -125,6 +148,18 @@
     cursor: pointer;
   }
 
+  .btn.small {
+    min-height: 30px;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: .62;
+  }
+
   .quick button {
     justify-content: flex-start;
     border-color: var(--line);
@@ -163,6 +198,30 @@
     color: var(--green);
     padding: 9px 10px;
     font-weight: 700;
+  }
+
+  .mini-grid {
+    display: grid;
+    gap: 8px;
+  }
+
+  .metric {
+    border: 1px solid #e4e7ec;
+    border-radius: 7px;
+    padding: 8px;
+    background: #f8fafc;
+  }
+
+  .metric strong {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+  }
+
+  .metric span {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.35;
   }
 
   .results-head {
@@ -253,12 +312,53 @@
     color: var(--text);
   }
 
+  .source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 7px;
+    font-size: 12px;
+  }
+
+  .source-links a {
+    color: #175cd3;
+    text-decoration: none;
+  }
+
+  .history-list {
+    display: grid;
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .history-row {
+    display: grid;
+    gap: 5px;
+    border: 1px solid #e4e7ec;
+    border-radius: 7px;
+    padding: 8px;
+  }
+
+  .history-row strong {
+    font-size: 13px;
+  }
+
+  .history-row span,
+  .history-row a {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
   @media (min-width: 760px) {
     .page {
       padding: 18px;
     }
 
     .quick {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mini-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
@@ -279,10 +379,36 @@
 </style>
 </head>
 <body>
-<main class="page">
+<section class="login-panel hidden" id="loginPanel">
+  <div class="panel">
+    <div class="panel-head">Jamie Login</div>
+    <div class="panel-body">
+      <form id="loginForm">
+        <label>
+          <span>Username</span>
+          <input id="loginUsername" type="text" autocomplete="username" value="jamie">
+        </label>
+        <label>
+          <span>Password</span>
+          <input id="loginPassword" type="password" autocomplete="current-password">
+        </label>
+        <button class="btn primary" type="submit">Login</button>
+      </form>
+      <div class="status" id="loginStatus">Use the same staff login from the store portal.</div>
+    </div>
+  </div>
+</section>
+
+<main class="page hidden" id="app">
   <header class="top">
-    <h1>Trend Research</h1>
-    <div class="sub">Ask for a product trend report, then review the best ideas to check.</div>
+    <div>
+      <h1>Trend Research</h1>
+      <div class="sub">Ask for a product trend report, then review the best ideas to check.</div>
+    </div>
+    <div class="userbar">
+      <span id="currentUser">Jamie</span>
+      <button class="btn small" type="button" id="logout">Logout</button>
+    </div>
   </header>
 
   <section class="panel">
@@ -318,6 +444,17 @@
   </section>
 
   <section class="panel">
+    <div class="panel-head">Run Status</div>
+    <div class="panel-body">
+      <div class="mini-grid">
+        <div class="metric"><strong>Last Run</strong><span id="lastRun">Checking...</span></div>
+        <div class="metric"><strong>Search Use</strong><span id="searchUse">Checking...</span></div>
+        <div class="metric"><strong>Sources</strong><span id="sourceUse">Checking...</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
     <div class="results-head">
       <div>
         <div class="results-title">Report Results</div>
@@ -327,16 +464,38 @@
     </div>
     <div class="cards" id="cards"></div>
   </section>
+
+  <section class="panel">
+    <div class="results-head">
+      <div>
+        <div class="results-title">Previous Reports</div>
+        <div class="results-note">Saved from this tool</div>
+      </div>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
 </main>
 
 <script>
+const loginPanel = document.getElementById("loginPanel");
+const loginForm = document.getElementById("loginForm");
+const loginUsername = document.getElementById("loginUsername");
+const loginPassword = document.getElementById("loginPassword");
+const loginStatus = document.getElementById("loginStatus");
+const app = document.getElementById("app");
 const request = document.getElementById("request");
 const market = document.getElementById("market");
 const generateButton = document.getElementById("generate");
+const logoutButton = document.getElementById("logout");
+const currentUser = document.getElementById("currentUser");
 const statusBox = document.getElementById("status");
 const resultsNote = document.getElementById("resultsNote");
 const resultCount = document.getElementById("resultCount");
 const cards = document.getElementById("cards");
+const lastRun = document.getElementById("lastRun");
+const searchUse = document.getElementById("searchUse");
+const sourceUse = document.getElementById("sourceUse");
+const historyList = document.getElementById("historyList");
 const quickButtons = [...document.querySelectorAll(".quick button")];
 
 function price(row) {
@@ -366,6 +525,12 @@ function renderRows(rows) {
   for (const row of rows.slice(0, 6)) {
     const card = document.createElement("article");
     card.className = "result-card";
+    const sources = Array.isArray(row.sample_sources) && row.sample_sources.length
+      ? `<p class="line"><strong>Seen at:</strong> ${escapeHtml(row.sample_sources.join(", "))}</p>`
+      : "";
+    const links = Array.isArray(row.research_links) && row.research_links.length
+      ? `<div class="source-links">${row.research_links.map(link => `<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener">${escapeHtml(link.label)}</a>`).join("")}</div>`
+      : "";
     card.innerHTML = `
       <div class="card-top">
         <div class="product">${escapeHtml(row.keyword)}</div>
@@ -378,6 +543,8 @@ function renderRows(rows) {
       </div>
       <p class="line"><strong>Check before buying:</strong> ${escapeHtml(cleanCheck(row.pain_points))}</p>
       <p class="line"><strong>Ad hook:</strong> ${escapeHtml((row.slogans && row.slogans[0]) || "Needs slogan")}</p>
+      ${sources}
+      ${links}
     `;
     cards.appendChild(card);
   }
@@ -387,9 +554,38 @@ function activeMode() {
   return document.querySelector(".quick button.active")?.dataset.mode || "top_trends";
 }
 
+async function apiFetch(url, options = {}) {
+  const response = await fetch(url, {
+    credentials: "same-origin",
+    ...options,
+    headers: {
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
+    }
+  });
+  if (response.status === 401) {
+    showLogin("Jamie login required.");
+    throw new Error("Jamie login required.");
+  }
+  return response;
+}
+
+function showLogin(message = "") {
+  app.classList.add("hidden");
+  loginPanel.classList.remove("hidden");
+  if (message) loginStatus.textContent = message;
+  loginPassword.focus();
+}
+
+function showApp(user) {
+  loginPanel.classList.add("hidden");
+  app.classList.remove("hidden");
+  currentUser.textContent = user?.name || user?.username || "Jamie";
+}
+
 async function loadResults() {
   try {
-    const response = await fetch("results.json", { cache: "no-store" });
+    const response = await apiFetch("results.json", { cache: "no-store" });
     if (!response.ok) throw new Error("Missing results");
     const data = await response.json();
     resultsNote.textContent = data.meta?.generated_on ? `Generated ${data.meta.generated_on}` : "Saved results";
@@ -398,6 +594,52 @@ async function loadResults() {
     statusBox.textContent = "No saved report found yet. Generate a report to create one.";
     resultsNote.textContent = "No saved report";
     renderRows([]);
+  }
+}
+
+function renderStatus(status) {
+  const run = status?.lastRun || {};
+  const usage = status?.usage || {};
+  const sources = status?.sources || [];
+  lastRun.textContent = run.generated_on
+    ? `${run.generated_on} · ${run.result_count || 0} results · ${run.top_product || "No top product"}`
+    : "No generated report yet.";
+  searchUse.textContent = `Last report: ${usage.lastLiveCalls || 0} live, ${usage.lastCacheHits || 0} cached. Limit: ${usage.maxSearchesPerRun || 3} searches per run.`;
+  sourceUse.textContent = sources.length ? sources.join(" | ") : "Google Shopping plus source check links.";
+}
+
+function renderHistory(history = []) {
+  historyList.innerHTML = "";
+  if (!history.length) {
+    historyList.innerHTML = `<div class="history-row"><span>No previous reports saved yet.</span></div>`;
+    return;
+  }
+  for (const item of history.slice(0, 8)) {
+    const row = document.createElement("div");
+    row.className = "history-row";
+    const reportHref = item.id ? `api/history/${escapeHtml(item.id)}/report.html` : "report.html";
+    const pdfHref = item.id ? `api/history/${escapeHtml(item.id)}/report.pdf` : "report.pdf";
+    row.innerHTML = `
+      <strong>${escapeHtml(item.generated_on || item.generated_at || "Saved report")} · ${escapeHtml(item.top_product || "Report")}</strong>
+      <span>${escapeHtml(item.mode || "Trend Research")} · ${escapeHtml(item.result_count || 0)} results · ${escapeHtml(item.live_calls || 0)} live searches</span>
+      <span><a href="${reportHref}">View Report</a> · <a href="${pdfHref}">PDF</a></span>
+    `;
+    historyList.appendChild(row);
+  }
+}
+
+async function loadStatus() {
+  try {
+    const response = await apiFetch("api/status", { cache: "no-store" });
+    const data = await response.json();
+    renderStatus(data);
+    renderHistory(data.history || []);
+  } catch (error) {
+    if (error.message !== "Jamie login required.") {
+      lastRun.textContent = "Status is not available.";
+      searchUse.textContent = "Search use is not available.";
+      sourceUse.textContent = "Source status is not available.";
+    }
   }
 }
 
@@ -422,9 +664,8 @@ generateButton.addEventListener("click", async () => {
   generateButton.disabled = true;
   statusBox.textContent = "Generating report. This can take a minute.";
   try {
-    const response = await fetch("api/run-report", {
+    const response = await apiFetch("api/run-report", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mode, request: text, area: market.value })
     });
     const data = await response.json().catch(() => ({}));
@@ -439,7 +680,14 @@ generateButton.addEventListener("click", async () => {
       resultsNote.textContent = `Generated ${data.results.meta.generated_on}`;
     }
     renderRows(data.results?.rows || []);
+    if (data.status) {
+      renderStatus(data.status);
+      renderHistory(data.status.history || []);
+    } else {
+      await loadStatus();
+    }
   } catch (error) {
+    if (error.message === "Jamie login required.") return;
     statusBox.textContent = error.message === "Failed to fetch"
       ? "The report server is not connected yet. Latest saved report is shown below."
       : error.message;
@@ -448,8 +696,54 @@ generateButton.addEventListener("click", async () => {
   }
 });
 
-request.value = quickButtons[0].dataset.prompt;
-loadResults();
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  loginStatus.textContent = "Checking login...";
+  try {
+    const response = await fetch("api/login", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: loginUsername.value, password: loginPassword.value })
+    });
+    if (response.status === 404 || response.status === 405) {
+      throw new Error("The report server is not connected yet.");
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.message || "Login was not accepted.");
+    loginPassword.value = "";
+    showApp(data.user);
+    statusBox.textContent = "Latest saved report is shown below.";
+    await loadResults();
+    await loadStatus();
+  } catch (error) {
+    loginStatus.textContent = error.message;
+  }
+});
+
+logoutButton.addEventListener("click", async () => {
+  await fetch("api/logout", { method: "POST", credentials: "same-origin" }).catch(() => {});
+  showLogin("Logged out.");
+});
+
+async function start() {
+  request.value = quickButtons[0].dataset.prompt;
+  try {
+    const response = await fetch("api/session", { credentials: "same-origin", cache: "no-store" });
+    const data = await response.json();
+    if (!data.authenticated) {
+      showLogin();
+      return;
+    }
+    showApp(data.user);
+    await loadResults();
+    await loadStatus();
+  } catch {
+    showLogin("The report server is not connected yet.");
+  }
+}
+
+start();
 </script>
 </body>
 </html>
