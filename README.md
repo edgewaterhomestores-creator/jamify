@@ -18,6 +18,18 @@ RUN LIVE SHOPPING DATA
 3. Run:
    python trendscout.py live
 
+RUN THE CLICKABLE REPORT SERVER
+Set SERPAPI_KEY as an environment variable, then run:
+   python report_server.py
+
+Open:
+   http://127.0.0.1:8099/
+
+The Generate Report button posts to /api/run-report and refreshes the saved
+report files. It defaults to 3 SerpApi searches per click unless MAX_SEARCHES
+is set higher. It also defaults to a 5 minute cooldown between runs unless
+RUN_COOLDOWN_SECONDS is changed.
+
 PRESET RUNS
 python trendscout.py live top_trends
 python trendscout.py live most_potential
@@ -44,11 +56,10 @@ OUTPUT FILES
 - top5_report.txt: plain text backup
 - jamify_results.xlsx: advanced table
 
-CURRENT LIVE LIMITS
+CURRENT LIVE DATA
 Live mode pulls Google Shopping prices, seller/result counts, ratings,
-sample product titles, and sources through SerpApi. Trend growth,
-review pain-point scanning, TikTok/Etsy/Amazon/Reddit discovery, and
-weekly alerts are still later steps.
+sample product titles, and sources through SerpApi. Each run keeps a local
+cache so repeated searches do not keep spending searches from this program.
 
 SCORING
 Demand proxy 35% + low competition 30% + price spread 20% + quality gap 15%.

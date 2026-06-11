@@ -294,9 +294,9 @@
       </label>
 
       <div class="quick" aria-label="Quick report choices">
-        <button type="button" class="active" data-prompt="Generate a report of common new trends in Volusia County that might be good to sell online.">Top Trends</button>
-        <button type="button" data-prompt="Generate a report of products with the most selling potential, low competition, and easy shipping.">Most Potential</button>
-        <button type="button" data-prompt="">Custom</button>
+        <button type="button" class="active" data-mode="top_trends" data-prompt="Generate a report of common new trends in Volusia County that might be good to sell online.">Top Trends</button>
+        <button type="button" data-mode="most_potential" data-prompt="Generate a report of products with the most selling potential, low competition, and easy shipping.">Most Potential</button>
+        <button type="button" data-mode="custom" data-prompt="">Custom</button>
       </div>
 
       <div class="actions">
@@ -313,7 +313,7 @@
         </div>
       </div>
 
-      <div class="status" id="status">Latest report is shown below.</div>
+      <div class="status" id="status">Latest saved report is shown below.</div>
     </div>
   </section>
 
@@ -330,12 +330,9 @@
 </main>
 
 <script>
-const fallbackRows = [
-  { score: 42, keyword: "beach wagon balloon wheels", sellers: 56, price_low: 37.3, price_high: 899.99, avg_rating: 4.33, pain_points: "Needs review before buying inventory", slogans: ["The Beach Wagon Balloon Wheels Everyone Will Want Next Season."] },
-  { score: 42, keyword: "beach wagon wheels for coastal Florida shoppers", sellers: 44, price_low: 39.99, price_high: 415.99, avg_rating: 4.27, pain_points: "Needs review before buying inventory", slogans: ["The Beach Wagon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season."] }
-];
-
 const request = document.getElementById("request");
+const market = document.getElementById("market");
+const generateButton = document.getElementById("generate");
 const statusBox = document.getElementById("status");
 const resultsNote = document.getElementById("resultsNote");
 const resultCount = document.getElementById("resultCount");
@@ -344,6 +341,16 @@ const quickButtons = [...document.querySelectorAll(".quick button")];
 
 function price(row) {
   return `$${row.price_low || 0}-$${row.price_high || 0}`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
 
 const DEFAULT_CHECK = "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory.";
@@ -361,19 +368,23 @@ function renderRows(rows) {
     card.className = "result-card";
     card.innerHTML = `
       <div class="card-top">
-        <div class="product">${row.keyword}</div>
-        <div class="score">${row.score}</div>
+        <div class="product">${escapeHtml(row.keyword)}</div>
+        <div class="score">${escapeHtml(row.score)}</div>
       </div>
       <div class="facts">
-        <span class="fact">${row.sellers} sellers</span>
-        <span class="fact">${price(row)}</span>
-        <span class="fact">${row.avg_rating || "n/a"} rating</span>
+        <span class="fact">${escapeHtml(row.sellers)} sellers</span>
+        <span class="fact">${escapeHtml(price(row))}</span>
+        <span class="fact">${escapeHtml(row.avg_rating || "n/a")} rating</span>
       </div>
-      <p class="line"><strong>Check before buying:</strong> ${cleanCheck(row.pain_points)}</p>
-      <p class="line"><strong>Ad hook:</strong> ${(row.slogans && row.slogans[0]) || "Needs slogan"}</p>
+      <p class="line"><strong>Check before buying:</strong> ${escapeHtml(cleanCheck(row.pain_points))}</p>
+      <p class="line"><strong>Ad hook:</strong> ${escapeHtml((row.slogans && row.slogans[0]) || "Needs slogan")}</p>
     `;
     cards.appendChild(card);
   }
+}
+
+function activeMode() {
+  return document.querySelector(".quick button.active")?.dataset.mode || "top_trends";
 }
 
 async function loadResults() {
@@ -382,9 +393,11 @@ async function loadResults() {
     if (!response.ok) throw new Error("Missing results");
     const data = await response.json();
     resultsNote.textContent = data.meta?.generated_on ? `Generated ${data.meta.generated_on}` : "Saved results";
-    renderRows(data.rows || fallbackRows);
+    renderRows(data.rows || []);
   } catch {
-    renderRows(fallbackRows);
+    statusBox.textContent = "No saved report found yet. Generate a report to create one.";
+    resultsNote.textContent = "No saved report";
+    renderRows([]);
   }
 }
 
@@ -397,11 +410,42 @@ quickButtons.forEach(button => {
   });
 });
 
-document.getElementById("generate").addEventListener("click", () => {
+generateButton.addEventListener("click", async () => {
   const text = request.value.trim();
-  statusBox.textContent = text
-    ? "Report ready. See results below."
-    : "Type what you want to research first.";
+  const mode = activeMode();
+  if (mode === "custom" && !text) {
+    statusBox.textContent = "Enter keywords or choose Top Trends or Most Potential.";
+    request.focus();
+    return;
+  }
+
+  generateButton.disabled = true;
+  statusBox.textContent = "Generating report. This can take a minute.";
+  try {
+    const response = await fetch("api/run-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode, request: text, area: market.value })
+    });
+    const data = await response.json().catch(() => ({}));
+    if ((response.status === 404 || response.status === 405) && !data.message) {
+      throw new Error("The report server is not connected yet. Latest saved report is shown below.");
+    }
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || "The report did not run.");
+    }
+    statusBox.textContent = "New report generated. Results updated below.";
+    if (data.results?.meta?.generated_on) {
+      resultsNote.textContent = `Generated ${data.results.meta.generated_on}`;
+    }
+    renderRows(data.results?.rows || []);
+  } catch (error) {
+    statusBox.textContent = error.message === "Failed to fetch"
+      ? "The report server is not connected yet. Latest saved report is shown below."
+      : error.message;
+  } finally {
+    generateButton.disabled = false;
+  }
 });
 
 request.value = quickButtons[0].dataset.prompt;

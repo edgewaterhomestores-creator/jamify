@@ -23,6 +23,7 @@ from datetime import date
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE_FILE = os.path.join(HERE, "serpapi_cache.json")
+OUTPUT_DIR = os.environ.get("TREND_OUTPUT_DIR", HERE)
 DEFAULT_BUYER_CHECK = "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory."
 
 DEFAULT_MARKETS = [
@@ -65,6 +66,12 @@ SEARCH_PRESETS = {
         ],
         "details": "easy to ship lightweight good margin useful problem solving",
     },
+    "custom": {
+        "label": "Custom",
+        "description": "User-entered product keywords.",
+        "seed_keywords": [],
+        "details": "",
+    },
 }
 
 DEFAULT_SEARCH_MODE = "top_trends"
@@ -106,6 +113,21 @@ def unique(values):
     return out
 
 
+def split_values(value):
+    if isinstance(value, list):
+        return unique(value)
+    text = str(value or "").replace("\r", "\n").replace(";", "\n")
+    parts = []
+    for line in text.split("\n"):
+        parts.extend(line.split(","))
+    return unique(parts)
+
+
+def out_path(name):
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    return os.path.join(OUTPUT_DIR, name)
+
+
 def buyer_check(value):
     value = clean(value)
     if not value:
@@ -135,29 +157,30 @@ def active_preset(cfg):
 
 def build_search_keywords(cfg):
     preset = SEARCH_PRESETS[active_preset(cfg)]
-    seeds = cfg.get("seed_keywords") or preset["seed_keywords"]
+    seeds = cfg.get("seed_keywords") or preset["seed_keywords"] or DEFAULT_SEED_KEYWORDS
     markets = cfg.get("market_locations") or DEFAULT_MARKETS
     customer_type = clean(cfg.get("customer_type", "coastal Florida shoppers"))
     details = clean(cfg.get("details", preset["details"]))
     avoid = clean(cfg.get("avoid", "large fragile expensive returns"))
-    max_searches = int(cfg.get("max_searches", 18))
+    max_searches = int(cfg.get("max_searches", 3))
 
-    terms = []
+    base_terms = []
+    expanded_terms = []
     for base in seeds:
         base = clean(base)
         if not base:
             continue
-        terms.append(base)
+        base_terms.append(base)
         if customer_type:
-            terms.append(f"{base} for {customer_type}")
+            expanded_terms.append(f"{base} for {customer_type}")
         if details:
-            terms.append(f"{base} {details}")
+            expanded_terms.append(f"{base} {details}")
         for market in markets[:3]:
-            terms.append(f"{base} {market}")
+            expanded_terms.append(f"{base} {market}")
         if avoid:
-            terms.append(f"{base} not {avoid}")
+            expanded_terms.append(f"{base} not {avoid}")
 
-    return unique(terms)[:max_searches]
+    return unique(base_terms + expanded_terms)[:max_searches]
 
 
 def serpapi_shopping(query, key, location, cache, cache_days=7):
@@ -287,7 +310,7 @@ def row_summary(r):
 
 
 def write_results_json(rows, meta):
-    p = os.path.join(HERE, "results.json")
+    p = out_path("results.json")
     data = {"meta": meta, "rows": [row_summary(r) for r in rows]}
     with open(p, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
@@ -308,7 +331,7 @@ def write_xlsx(rows):
                    r.get("data_source", ""), *r["slogans"][:3]])
     for i, w in enumerate([7, 34, 8, 10, 10, 10, 12, 24, 20, 38, 38, 38], 1):
         ws.column_dimensions[chr(64 + i)].width = w
-    p = os.path.join(HERE, "jamify_results.xlsx")
+    p = out_path("jamify_results.xlsx")
     wb.save(p)
     return p
 
@@ -332,7 +355,7 @@ def write_text_report(rows, meta):
             *[f"    - {s}" for s in r["slogans"]],
             "",
         ]
-    p = os.path.join(HERE, "top5_report.txt")
+    p = out_path("top5_report.txt")
     with open(p, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     return p
@@ -354,7 +377,7 @@ def write_report_html(rows, meta):
           <td>{sources}</td>
         </tr>""")
 
-    p = os.path.join(HERE, "report.html")
+    p = out_path("report.html")
     with open(p, "w", encoding="utf-8") as f:
         f.write(f"""<!DOCTYPE html>
 <html lang="en">
@@ -406,7 +429,7 @@ def write_report_pdf(rows, meta):
     except Exception:
         return None
 
-    out = os.path.join(HERE, "report.pdf")
+    out = out_path("report.pdf")
     margin = 0.3 * inch
     usable_width = letter[0] - (2 * margin)
     styles = getSampleStyleSheet()
@@ -471,6 +494,16 @@ def main():
         cfg["max_searches"] = int(os.environ["MAX_SEARCHES"])
     if os.environ.get("SEARCH_MODE"):
         cfg["search_mode"] = os.environ["SEARCH_MODE"]
+    if os.environ.get("SEARCH_LOCATION"):
+        cfg["search_location"] = os.environ["SEARCH_LOCATION"]
+    if os.environ.get("MARKET_LOCATIONS"):
+        cfg["market_locations"] = split_values(os.environ["MARKET_LOCATIONS"])
+    if os.environ.get("CUSTOMER_TYPE"):
+        cfg["customer_type"] = os.environ["CUSTOMER_TYPE"]
+    if os.environ.get("CUSTOM_DETAILS"):
+        cfg["details"] = os.environ["CUSTOM_DETAILS"]
+    if os.environ.get("CUSTOM_KEYWORDS"):
+        cfg["seed_keywords"] = split_values(os.environ["CUSTOM_KEYWORDS"])
     preset_key = active_preset(cfg)
     preset = SEARCH_PRESETS[preset_key]
     markets = cfg.get("market_locations") or DEFAULT_MARKETS
@@ -487,11 +520,16 @@ def main():
         for kw in kws:
             try:
                 p = serpapi_shopping(kw, serp, search_location, cache, cache_days)
+                if p["sellers"] < 1:
+                    print(f"  skip {kw}: no shopping results")
+                    continue
                 products.append(p)
                 print(f"  fetched: {kw} ({p['sellers']} shopping results)")
             except Exception as e:
                 print(f"  skip {kw}: {e}")
         save_cache(cache)
+        if not products:
+            sys.exit("No shopping results were found. Try broader keywords or run Top Trends.")
         data_status = "Live Google Shopping data"
         data_note = f"{preset['label']} search. Prices, sellers, and ratings came from Google Shopping. Before buying inventory, compare reviews, shipping cost, and current seller listings."
     else:
