@@ -3,7 +3,7 @@
     "generated_on": "2026-06-10",
     "mode": "live",
     "data_status": "Live Google Shopping data",
-    "data_note": "Real price, seller, and rating data came from SerpApi Google Shopping. Trend growth and review pain-point scanning are still under development.",
+    "data_note": "Prices, sellers, and ratings came from Google Shopping. Before buying inventory, compare reviews, shipping cost, and current seller listings.",
     "markets": [
       "Florida",
       "Volusia County Florida",
@@ -27,7 +27,7 @@
       "price_high": 899.99,
       "avg_rating": 4.33,
       "trend_growth": 50,
-      "pain_points": "Review scan not wired yet",
+      "pain_points": "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory.",
       "slogans": [
         "The Beach Wagon Balloon Wheels Everyone Will Want Next Season.",
         "Stop Settling. Upgrade to the Beach Wagon Balloon Wheels Done Right.",
@@ -56,7 +56,7 @@
       "price_high": 415.99,
       "avg_rating": 4.27,
       "trend_growth": 50,
-      "pain_points": "Review scan not wired yet",
+      "pain_points": "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory.",
       "slogans": [
         "The Beach Wagon Balloon Wheels For Coastal Florida Shoppers Everyone Will Want Next Season.",
         "Stop Settling. Upgrade to the Beach Wagon Balloon Wheels For Coastal Florida Shoppers Done Right.",

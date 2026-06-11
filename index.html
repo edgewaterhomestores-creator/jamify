@@ -346,8 +346,11 @@ function price(row) {
   return `$${row.price_low || 0}-$${row.price_high || 0}`;
 }
 
+const DEFAULT_CHECK = "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory.";
+
 function cleanCheck(text) {
-  return text === "Review scan not wired yet" ? "Needs review before buying inventory" : text;
+  const value = String(text || "").trim();
+  return value || DEFAULT_CHECK;
 }
 
 function renderRows(rows) {
@@ -366,7 +369,7 @@ function renderRows(rows) {
         <span class="fact">${price(row)}</span>
         <span class="fact">${row.avg_rating || "n/a"} rating</span>
       </div>
-      <p class="line"><strong>Check before buying:</strong> ${cleanCheck(row.pain_points) || "Needs review before buying inventory"}</p>
+      <p class="line"><strong>Check before buying:</strong> ${cleanCheck(row.pain_points)}</p>
       <p class="line"><strong>Ad hook:</strong> ${(row.slogans && row.slogans[0]) || "Needs slogan"}</p>
     `;
     cards.appendChild(card);

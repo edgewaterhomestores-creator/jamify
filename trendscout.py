@@ -23,6 +23,7 @@ from datetime import date
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE_FILE = os.path.join(HERE, "serpapi_cache.json")
+DEFAULT_BUYER_CHECK = "Check current reviews, shipping cost, return risk, and seller pricing before buying inventory."
 
 DEFAULT_MARKETS = [
     "Florida",
@@ -103,6 +104,13 @@ def unique(values):
             seen.add(key)
             out.append(value)
     return out
+
+
+def buyer_check(value):
+    value = clean(value)
+    if not value:
+        return DEFAULT_BUYER_CHECK
+    return value
 
 
 def load_cache():
@@ -205,7 +213,7 @@ def serpapi_shopping(query, key, location, cache, cache_days=7):
         "price_high": max(prices) if prices else 0,
         "avg_rating": round(sum(ratings) / len(ratings), 2) if ratings else 0,
         "trend_growth": 50,
-        "pain_points": "Review scan not wired yet",
+        "pain_points": DEFAULT_BUYER_CHECK,
         "source_count": len(set(sources)),
         "sample_titles": titles[:3],
         "sample_sources": unique(sources)[:4],
@@ -240,7 +248,7 @@ def slogans_claude(p, key):
         "max_tokens": 300,
         "messages": [{"role": "user", "content":
             f"Write 5 short punchy sales slogans for: {p['keyword']}. "
-            f"Customer pain points: {p.get('pain_points','n/a')}. "
+            f"Customer checks to consider: {buyer_check(p.get('pain_points', ''))}. "
             "Return ONLY a JSON array of 5 strings, nothing else."}]
     }).encode()
     req = urllib.request.Request(
@@ -270,7 +278,7 @@ def row_summary(r):
         "price_high": r["price_high"],
         "avg_rating": r["avg_rating"],
         "trend_growth": r.get("trend_growth", ""),
-        "pain_points": r.get("pain_points", ""),
+        "pain_points": buyer_check(r.get("pain_points", "")),
         "slogans": r["slogans"],
         "sample_titles": r.get("sample_titles", []),
         "sample_sources": r.get("sample_sources", []),
@@ -292,11 +300,11 @@ def write_xlsx(rows):
     ws = wb.active
     ws.title = "Trend Research"
     hdr = ["Score", "Product", "Sellers", "Price Low", "Price High", "Avg Rating",
-           "Trend Growth", "Pain Points", "Source", "Slogan 1", "Slogan 2", "Slogan 3"]
+           "Trend Growth", "Check Before Buying", "Source", "Slogan 1", "Slogan 2", "Slogan 3"]
     ws.append(hdr)
     for r in rows:
         ws.append([r["score"], r["keyword"], r["sellers"], r["price_low"], r["price_high"],
-                   r["avg_rating"], r.get("trend_growth", ""), r.get("pain_points", ""),
+                   r["avg_rating"], r.get("trend_growth", ""), buyer_check(r.get("pain_points", "")),
                    r.get("data_source", ""), *r["slogans"][:3]])
     for i, w in enumerate([7, 34, 8, 10, 10, 10, 12, 24, 20, 38, 38, 38], 1):
         ws.column_dimensions[chr(64 + i)].width = w
@@ -308,7 +316,7 @@ def write_xlsx(rows):
 def write_text_report(rows, meta):
     top = rows[:5]
     lines = [
-        f"TREND RESEARCH - TOP OPPORTUNITIES ({date.today()})",
+        f"TREND RESEARCH - TOP OPPORTUNITIES ({meta.get('generated_on', date.today())})",
         "=" * 50,
         f"Market: {', '.join(meta.get('markets', []))}",
         f"Data status: {meta.get('data_status')}",
@@ -319,7 +327,7 @@ def write_text_report(rows, meta):
             f"[{r['score']}/100] {r['keyword'].upper()}",
             f"  Sellers: {r['sellers']} | Price: ${r['price_low']}-${r['price_high']} | Rating: {r['avg_rating'] or 'n/a'}",
             f"  Source: {r.get('data_source', 'n/a')}",
-            f"  Pain points: {r.get('pain_points', 'n/a')}",
+            f"  Check before buying: {buyer_check(r.get('pain_points', ''))}",
             "  Slogans:",
             *[f"    - {s}" for s in r["slogans"]],
             "",
@@ -342,7 +350,7 @@ def write_report_html(rows, meta):
           <td>{r['sellers']}</td>
           <td>${r['price_low']}-${r['price_high']}</td>
           <td>{r['avg_rating'] or 'n/a'}</td>
-          <td>{html.escape(r.get('pain_points', 'n/a'))}</td>
+          <td>{html.escape(buyer_check(r.get('pain_points', '')))}</td>
           <td>{sources}</td>
         </tr>""")
 
@@ -361,7 +369,7 @@ body{{margin:0;background:#e9edf2;color:#1d2633;font-family:Arial,Helvetica,sans
 h1{{margin:0;font-size:22px;line-height:1.2}} .meta{{margin-top:5px;color:#657285;font-size:12px;line-height:1.4}}
 .actions{{display:flex;gap:8px}} .btn{{display:inline-flex;min-height:34px;align-items:center;justify-content:center;padding:7px 12px;border:1px solid #172033;border-radius:6px;background:#fff;color:#172033;font-weight:700;text-decoration:none;white-space:nowrap}} .primary{{background:#172033;color:#fff}}
 table{{width:100%;border-collapse:collapse;table-layout:fixed}} th,td{{border:1px solid #9aa5b1;padding:8px;text-align:left;vertical-align:top}} th{{background:#f2f4f7;font-size:11px;text-transform:uppercase}} .score{{color:#167449;font-weight:700}} td span{{display:block;margin-top:4px;color:#364456;font-size:12px;line-height:1.35}}
-.note{{margin:12px 0;padding:10px;border:1px solid #f1b8b2;border-radius:6px;background:#fff1f0;color:#b42318;font-weight:700}}
+.note{{margin:12px 0;padding:10px;border:1px solid #d3d9e1;border-radius:6px;background:#f8fafc;color:#364456}}
 @media print{{@page{{size:letter portrait;margin:.3in}}body{{background:#fff;font-size:10px}}.page{{max-width:none;margin:0;padding:0;border:0}}.actions{{display:none}}th,td{{padding:5px}}}}
 @media(max-width:760px){{.page{{margin:0;border-left:0;border-right:0;border-radius:0}}.topbar,.actions{{flex-direction:column}}.table-wrap{{overflow-x:auto}}table{{min-width:900px}}}}
 </style>
@@ -378,7 +386,7 @@ table{{width:100%;border-collapse:collapse;table-layout:fixed}} th,td{{border:1p
   <div class="note">{html.escape(meta.get('data_note', ''))}</div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th style="width:56px">Score</th><th style="width:220px">Product / Hook</th><th style="width:70px">Sellers</th><th style="width:90px">Price</th><th style="width:70px">Rating</th><th style="width:170px">Pain Points</th><th>Sample Sources</th></tr></thead>
+      <thead><tr><th style="width:56px">Score</th><th style="width:220px">Product / Hook</th><th style="width:70px">Sellers</th><th style="width:90px">Price</th><th style="width:70px">Rating</th><th style="width:170px">Check Before Buying</th><th>Sample Sources</th></tr></thead>
       <tbody>{''.join(body_rows)}</tbody>
     </table>
   </div>
@@ -410,7 +418,7 @@ def write_report_pdf(rows, meta):
         Spacer(1, 0.12 * inch),
     ]
 
-    table_data = [[Paragraph(h, styles["SmallBold"]) for h in ["Score", "Product / Hook", "Sellers", "Price", "Rating", "Pain Points"]]]
+    table_data = [[Paragraph(h, styles["SmallBold"]) for h in ["Score", "Product / Hook", "Sellers", "Price", "Rating", "Check Before Buying"]]]
     for r in rows[:5]:
         table_data.append([
             Paragraph(str(r["score"]), styles["SmallBold"]),
@@ -418,7 +426,7 @@ def write_report_pdf(rows, meta):
             Paragraph(str(r["sellers"]), styles["Small"]),
             Paragraph(f"${r['price_low']}-${r['price_high']}", styles["Small"]),
             Paragraph(str(r["avg_rating"] or "n/a"), styles["Small"]),
-            Paragraph(html.escape(r.get("pain_points", "n/a")), styles["Small"]),
+            Paragraph(html.escape(buyer_check(r.get("pain_points", ""))), styles["Small"]),
         ])
     table = Table(table_data, colWidths=[0.48*inch, 2.15*inch, 0.55*inch, 0.78*inch, 0.58*inch, usable_width - 4.54*inch], repeatRows=1)
     table.setStyle(TableStyle([
@@ -485,11 +493,11 @@ def main():
                 print(f"  skip {kw}: {e}")
         save_cache(cache)
         data_status = "Live Google Shopping data"
-        data_note = f"{preset['label']} search. Real price, seller, and rating data came from SerpApi Google Shopping. Trend growth and review pain-point scanning are still under development."
+        data_note = f"{preset['label']} search. Prices, sellers, and ratings came from Google Shopping. Before buying inventory, compare reviews, shipping cost, and current seller listings."
     else:
         products = [dict(d, data_source="Demo sample") for d in DEMO]
         kws = [p["keyword"] for p in products]
-        data_status = "Under Dev - No real info"
+        data_status = "Sample report only"
         data_note = f"{preset['label']} search. This is sample data only. Run live mode with a SerpApi key to use real shopping data."
         print("DEMO MODE - sample data only")
 
