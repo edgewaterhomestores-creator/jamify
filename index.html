@@ -178,6 +178,12 @@
     gap: 8px;
   }
 
+  .market-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   .btn.primary {
     background: var(--slate);
     color: #fff;
@@ -367,6 +373,10 @@
       align-items: end;
     }
 
+    .market-tools {
+      grid-template-columns: minmax(180px, .6fr) minmax(260px, 1fr);
+    }
+
     .secondary-actions {
       width: 250px;
       margin-top: 0;
@@ -426,11 +436,18 @@
       </div>
 
       <div class="actions">
-        <label>
-          <span>Area</span>
-          <input id="market" type="text" value="Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville">
-        </label>
+        <div class="market-tools">
+          <label>
+            <span>ZIP / City / State</span>
+            <input id="marketLookup" type="text" placeholder="32132, New Smyrna Beach, FL">
+          </label>
+          <label>
+            <span>Area</span>
+            <input id="market" type="text" value="Florida, Volusia County, Edgewater, New Smyrna Beach, Oak Hill, Titusville">
+          </label>
+        </div>
         <div>
+          <button class="btn" type="button" id="lookupMarket">Lookup Area</button>
           <button class="btn primary" type="button" id="generate">Generate Report</button>
           <div class="secondary-actions">
             <a class="btn" href="report.html">View Report</a>
@@ -485,6 +502,8 @@ const loginStatus = document.getElementById("loginStatus");
 const app = document.getElementById("app");
 const request = document.getElementById("request");
 const market = document.getElementById("market");
+const marketLookup = document.getElementById("marketLookup");
+const lookupMarketButton = document.getElementById("lookupMarket");
 const generateButton = document.getElementById("generate");
 const logoutButton = document.getElementById("logout");
 const currentUser = document.getElementById("currentUser");
@@ -643,6 +662,33 @@ async function loadStatus() {
   }
 }
 
+async function lookupMarket() {
+  const query = marketLookup.value.trim();
+  if (!query) {
+    statusBox.textContent = "Enter a ZIP, city, county, or state to look up.";
+    marketLookup.focus();
+    return;
+  }
+
+  lookupMarketButton.disabled = true;
+  statusBox.textContent = "Looking up area...";
+  try {
+    const response = await apiFetch(`api/market-lookup?q=${encodeURIComponent(query)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) throw new Error(data.message || "Area lookup failed.");
+    market.value = data.market || market.value;
+    const count = Array.isArray(data.matches) ? data.matches.length : 0;
+    statusBox.textContent = count === 1
+      ? `Area updated from ${query}.`
+      : `Area updated from ${count} matches.`;
+  } catch (error) {
+    if (error.message === "Jamie login required.") return;
+    statusBox.textContent = error.message;
+  } finally {
+    lookupMarketButton.disabled = false;
+  }
+}
+
 quickButtons.forEach(button => {
   button.addEventListener("click", () => {
     quickButtons.forEach(item => item.classList.remove("active"));
@@ -666,7 +712,7 @@ generateButton.addEventListener("click", async () => {
   try {
     const response = await apiFetch("api/run-report", {
       method: "POST",
-      body: JSON.stringify({ mode, request: text, area: market.value })
+      body: JSON.stringify({ mode, request: text, area: market.value, lookup: marketLookup.value })
     });
     const data = await response.json().catch(() => ({}));
     if ((response.status === 404 || response.status === 405) && !data.message) {
@@ -693,6 +739,14 @@ generateButton.addEventListener("click", async () => {
       : error.message;
   } finally {
     generateButton.disabled = false;
+  }
+});
+
+lookupMarketButton.addEventListener("click", lookupMarket);
+marketLookup.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    lookupMarket();
   }
 });
 

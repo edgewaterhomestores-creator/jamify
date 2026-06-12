@@ -18,6 +18,7 @@ Copy config.example.json to config.json and set:
 - serpapi_key
 - portal_users_path
 - allowed_users: ["jamie"]
+- zip_data_path
 
 RUN LOCALLY
 python report_server.py
@@ -35,6 +36,7 @@ ENVIRONMENT CONTROLS
 - RUN_COOLDOWN_SECONDS: delay between report runs. Default 300.
 - PORTAL_USERS_PATH: path to the store portal users.json.
 - ALLOWED_USERS: comma-separated usernames allowed into this tool. Default jamie.
+- ZIP_DATA_PATH: path to USZIPCodes202602.csv.
 - TREND_OUTPUT_DIR: where current report files are written.
 - TREND_STATE_DIR: where private run history is saved.
 
@@ -51,3 +53,7 @@ Live reports use Google Shopping data through SerpApi for prices, seller/result
 counts, ratings, sample product titles, and sample stores. Each product also
 gets quick check links for Google Trends, Reddit, Etsy, and Amazon without
 spending extra searches.
+
+MARKET LOOKUP
+The app includes zip_data/USZIPCodes202602.csv. Jamie can enter one or more
+ZIP codes, cities, counties, or states to fill the report Area field.

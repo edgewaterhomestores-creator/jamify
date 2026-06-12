@@ -5,6 +5,7 @@ Uses the existing store portal users.json password hashes, allows Jamie by
 default, protects report files, runs live reports, and saves report history.
 """
 import base64
+import csv
 import hashlib
 import hmac
 import json
@@ -19,7 +20,7 @@ from datetime import datetime, timezone
 from http import cookies
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import parse_qs, unquote, urlparse
 
 
 HERE = Path(__file__).resolve().parent
@@ -33,6 +34,21 @@ LAST_RUN_AT = 0.0
 SESSION_COOKIE = "trend_research_sid"
 PUBLIC_PATHS = {"/", "/index.html"}
 REPORT_FILES = {"results.json", "report.html", "report.pdf", "top5_report.txt", "jamify_results.xlsx"}
+ZIP_LOOKUP_CACHE = None
+STATE_NAMES = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California",
+    "CO": "Colorado", "CT": "Connecticut", "DE": "Delaware", "FL": "Florida", "GA": "Georgia",
+    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa",
+    "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland",
+    "MA": "Massachusetts", "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi",
+    "MO": "Missouri", "MT": "Montana", "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire",
+    "NJ": "New Jersey", "NM": "New Mexico", "NY": "New York", "NC": "North Carolina",
+    "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania",
+    "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee",
+    "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
+    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming", "DC": "District of Columbia",
+}
+STATE_CODES_BY_NAME = {name.lower(): code for code, name in STATE_NAMES.items()}
 
 
 def utc_now():
@@ -61,6 +77,10 @@ def split_values(value):
     for line in text.split("\n"):
         parts.extend(line.split(","))
     return [part.strip() for part in parts if part.strip()]
+
+
+def title_case(value):
+    return " ".join(part.capitalize() for part in clean(value).lower().split())
 
 
 def read_json(path, fallback):
@@ -106,6 +126,155 @@ def portal_user_path():
         if path.exists():
             return path.resolve()
     return candidates[0].resolve() if candidates else None
+
+
+def zip_data_path():
+    configured = os.environ.get("ZIP_DATA_PATH") or app_config().get("zip_data_path")
+    candidates = []
+    if configured:
+        candidates.append(Path(configured))
+    candidates.extend([
+        HERE / "zip_data" / "USZIPCodes202602.csv",
+        HERE / "USZIPCodes202602.csv",
+        HERE.parents[1] / "ContractsPortal" / "LavaCakeBeginnings" / "LavaCakeEstimates" / "Data" / "USZIPCodes202602.csv",
+    ])
+    for path in candidates:
+        if path.exists():
+            return path.resolve()
+    return candidates[0].resolve() if candidates else None
+
+
+def load_location_data():
+    global ZIP_LOOKUP_CACHE
+    if ZIP_LOOKUP_CACHE is not None:
+        return ZIP_LOOKUP_CACHE
+
+    path = zip_data_path()
+    data = {"by_zip": {}, "locations": []}
+    if not path or not path.exists():
+        ZIP_LOOKUP_CACHE = data
+        return data
+
+    seen_locations = set()
+    with path.open(newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            zip_code = clean(row.get("ZipCode") or row.get("ZIP") or row.get("zip")).zfill(5)
+            if len(zip_code) != 5 or not zip_code.isdigit():
+                continue
+            city = title_case(row.get("City"))
+            county = title_case(row.get("County"))
+            state = clean(row.get("State")).upper()
+            state_name = STATE_NAMES.get(state, state)
+            county_label = f"{county} County" if county and not county.lower().endswith("county") else county
+            item = {
+                "zip": zip_code,
+                "city": city,
+                "county": county,
+                "countyLabel": county_label,
+                "state": state,
+                "stateName": state_name,
+                "market": ", ".join(part for part in [state_name, county_label, city] if part),
+            }
+            data["by_zip"].setdefault(zip_code, item)
+            location_key = (city.lower(), county_label.lower(), state)
+            if city and location_key not in seen_locations:
+                seen_locations.add(location_key)
+                data["locations"].append(item)
+
+    ZIP_LOOKUP_CACHE = data
+    return data
+
+
+def lookup_zip(zip_code):
+    zip_code = "".join(ch for ch in str(zip_code or "") if ch.isdigit())[:5]
+    if len(zip_code) != 5:
+        return None
+    return load_location_data()["by_zip"].get(zip_code)
+
+
+def market_from_matches(matches):
+    states = []
+    counties = []
+    cities = []
+    for item in matches:
+        if item.get("stateName") and item["stateName"] not in states:
+            states.append(item["stateName"])
+        if item.get("countyLabel") and item["countyLabel"] not in counties:
+            counties.append(item["countyLabel"])
+        if item.get("city") and item["city"] not in cities:
+            cities.append(item["city"])
+    return ", ".join(states + counties + cities)
+
+
+def lookup_market(query):
+    terms = split_values(query)
+    data = load_location_data()
+    matches = []
+    seen = set()
+
+    def add(item, match_type):
+        if not item:
+            return
+        key = (match_type, item.get("zip", ""), item.get("city", ""), item.get("countyLabel", ""), item.get("state", ""))
+        if key in seen:
+            return
+        seen.add(key)
+        matches.append({**item, "matchType": match_type})
+
+    for term in terms:
+        term_clean = clean(term)
+        term_key = term_clean.lower()
+        digits = "".join(ch for ch in term_clean if ch.isdigit())
+
+        if len(digits) == 5:
+            add(data["by_zip"].get(digits), "zip")
+            continue
+
+        state_code = term_clean.upper()
+        if state_code in STATE_NAMES:
+            add({
+                "zip": "",
+                "city": "",
+                "county": "",
+                "countyLabel": "",
+                "state": state_code,
+                "stateName": STATE_NAMES[state_code],
+                "market": STATE_NAMES[state_code],
+            }, "state")
+            continue
+
+        if term_key in STATE_CODES_BY_NAME:
+            state_code = STATE_CODES_BY_NAME[term_key]
+            add({
+                "zip": "",
+                "city": "",
+                "county": "",
+                "countyLabel": "",
+                "state": state_code,
+                "stateName": STATE_NAMES[state_code],
+                "market": STATE_NAMES[state_code],
+            }, "state")
+            continue
+
+        normalized_county = term_key.replace(" county", "")
+        for item in data["locations"]:
+            if item["city"].lower() == term_key:
+                add(item, "city")
+            elif item["county"].lower() == normalized_county:
+                add({
+                    **item,
+                    "city": "",
+                    "market": ", ".join(part for part in [item["stateName"], item["countyLabel"]] if part),
+                }, "county")
+            if len(matches) >= 30:
+                break
+
+    return {
+        "matches": matches[:30],
+        "market": market_from_matches(matches[:30]),
+        "zipDataConfigured": bool(zip_data_path() and zip_data_path().exists()),
+    }
 
 
 def b64url(value):
@@ -298,6 +467,7 @@ def status_payload():
         "sources": [
             "Google Shopping prices, sellers, ratings, and sample stores",
             "Google Trends, Reddit, Etsy, and Amazon check links for each product",
+            "ZIP/city/state lookup from the included US ZIP table",
             "Local area terms from Volusia County / Edgewater / New Smyrna / Oak Hill / Titusville",
         ],
         "auth": {
@@ -356,6 +526,19 @@ class Handler(SimpleHTTPRequestHandler):
             if not self.require_auth():
                 return
             self.send_json(200, {"ok": True, "history": load_history().get("reports", [])[:30]})
+            return
+        if path == "/api/market-lookup" or path == "/api/zip-lookup":
+            if not self.require_auth():
+                return
+            query = parse_qs(urlparse(self.path).query).get("q", [""])[0]
+            result = lookup_market(query)
+            if not result["zipDataConfigured"]:
+                self.send_json(500, {"ok": False, "message": "The ZIP/city lookup file is not installed."})
+                return
+            if not result["matches"]:
+                self.send_json(404, {"ok": False, "message": "No ZIP, city, county, or state match was found."})
+                return
+            self.send_json(200, {"ok": True, **result})
             return
         if path.startswith("/api/history/"):
             if not self.require_auth():
